@@ -1,0 +1,89 @@
+
+<%- include("../partials/header") %>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- ✅ Navbar Added -->
+<%- include("../partials/nav") %>
+
+  <!-- ✅ Hero Section -->
+  <section class="text-center mt-12 px-4">
+    <h2 class="text-4xl font-extrabold text-gray-800 mb-3">
+      Find Your Perfect Stay
+    </h2>
+
+    <p class="text-gray-500 text-lg">
+      Discover beautiful homes and amazing experiences.
+    </p>
+  </section>
+
+  <!-- ✅ Listings Section -->
+  <main class="flex-grow max-w-7xl mx-auto px-6 py-10">
+
+    <h3 class="text-2xl font-bold text-gray-800 mb-6">
+      Available Homes
+    </h3>
+
+    <!-- Grid -->
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+      <% if (registeredHomes.length === 0) { %>
+        <p class="text-gray-500">No homes added yet.</p>
+      <% } %>
+
+      <% registeredHomes.forEach(home => { %>
+        <!-- Card -->
+        <div class="bg-white rounded-lg shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden hover:scale-105">
+          <!-- Image -->
+          <div class="h-48 bg-gray-300 overflow-hidden">
+            <img src="<%= home.photo %>" alt="<%= home.houseName %>" class="w-full h-full object-cover">
+          </div>
+          
+          <div class="p-5">
+            <!-- Name -->
+            <h4 class="text-xl font-bold text-gray-800 mb-2">
+              <%= home.houseName %>
+            </h4>
+            
+            <!-- Location -->
+            <p class="text-sm text-gray-600 mb-3 flex items-center">
+              📍 <%= home.location %>
+            </p>
+            
+            <div >
+              <!-- Rating -->
+            <p class="text-sm text-yellow-500 font-semibold mb-4">
+              ⭐ <%= home.rating %>/5 Rating
+            </p>
+            
+            <!-- Price -->
+            <p class="text-2xl font-bold text-rose-500 mb-4">
+              ₹<%= home.price %> <span class="text-sm text-gray-500 font-normal">/night</span>
+            </p>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="flex gap-3">
+              <a href="/homes/<%= home._id %>" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition-colors p-2 pl-5"  >
+                View Details
+              </a>
+              <!-- <button class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg font-semibold transition-colors">
+                Book Now
+              </button> -->
+               <%- include("../partials/favourite", {home: home}) %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+
+    </div>
+
+  </main>
+
+  <!-- ✅ Footer -->
+<%- include("../partials/footer") %>
+
+</body>
+</html>
+
+

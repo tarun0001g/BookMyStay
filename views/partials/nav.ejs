@@ -1,0 +1,73 @@
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    
+    <h1 class="text-2xl font-bold text-rose-500 tracking-wide">
+      BookMyStay
+    </h1>
+
+    <nav class="flex items-center gap-4">
+      <a href="/" class="<%= pageName==='Home' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %>  px-4 py-2 rounded-lg font-semibold transition">
+        Home
+      </a>
+
+      <% if(isLoggedIn) {%>
+        <% if(user && user.userType == 'guest') {%>
+
+          <a href="/bookings"
+            class="<%= pageName==='bookings' ?  'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %> px-4 py-2 rounded-lg font-semibold transition">
+            Bookings
+          </a>
+
+          <a href="/homes"
+            class="<%= pageName==='Homes' ?  'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %> px-4 py-2 rounded-lg font-semibold transition">
+            All Homes
+          </a>
+
+          <a href="/favourites"
+            class="<%= pageName==='Favourites' ?  'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %> px-4 py-2 rounded-lg font-semibold transition">
+            Favourites
+          </a>
+
+        <% } else { %>
+
+          <a href="/admin/admin-home-list"
+            class="<%= pageName==='admin-homes' ?  'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %> px-4 py-2 rounded-lg font-semibold transition">
+            Admin's Homes
+          </a>
+
+          <a href="/admin/add-home"
+            class="<%= pageName==='Add Home' ?  'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %> px-4 py-2 rounded-lg font-semibold transition">
+            Add Home
+          </a>
+
+         <% }%>
+      <% } %>
+
+      <% if(!isLoggedIn) {%>
+
+        <a href="/login"
+          class="<%= pageName==='login' ?  'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %> px-4 py-2 rounded-lg font-semibold transition">
+          Login
+        </a>
+        <a href="/signup"
+          class="<%= pageName==='signup' ?  'bg-rose-500 text-white hover:bg-rose-600' : 'text-rose-700 hover:bg-rose-100 ' %> px-4 py-2 rounded-lg font-semibold transition">
+          Sign Up
+        </a>
+
+      <% } else { %>
+
+        <form action="/logout" method="POST">
+          <button type="submit"
+            class="bg-rose-600 text-white hover:bg-rose-700 px-6 py-2 rounded-lg font-semibold transition shadow-md hover:shadow-lg">
+            Logout
+          </button>
+        </form>
+        
+      <% } %>
+    
+    </nav>
+
+  </div>
+</header>
+

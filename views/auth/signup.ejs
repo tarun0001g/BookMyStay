@@ -1,0 +1,147 @@
+
+<%- include("../partials/header") %>
+
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+
+<%- include("../partials/nav") %>
+
+<main class="flex min-h-screen items-center justify-center px-4 py-10">
+  <section class="w-full max-w-xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_25px_75px_-35px_rgba(0,0,0,0.35)]">
+    <div class="bg-gradient-to-r bg-rose-500 px-8 py-8 text-white">
+      <p class="text-sm uppercase tracking-[0.3em] opacity-90">Build your stay with confidence</p>
+      <h1 class="mt-3 text-3xl font-semibold tracking-tight">Create a BookMyStay account</h1>
+    </div>
+
+    <%- include("../partials/errors") %>
+
+    <div class="px-8 py-8 sm:px-10">
+      <form action="/signup" method="POST" class="space-y-5">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="block">
+            <span class="mb-2 block text-sm font-medium text-slate-700">First name</span>
+            <input 
+              id="firstName"
+              name="firstName"
+              type="text"
+              value="<%= typeof oldInput.firstName !== 'undefined' ? oldInput.firstName : '' %>"
+              placeholder="Jane"
+              required
+              class="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition duration-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-sm font-medium text-slate-700">Last name</span>
+            <input 
+              id="lastName"
+              name="lastName"
+              type="text"
+              
+              value="<%= typeof oldInput.lastName !== 'undefined' ? oldInput.lastName : '' %>"
+              placeholder="Doe"
+              required
+              class="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition duration-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+            />
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="mb-2 block text-sm font-medium text-slate-700">Email address</span>
+          <input 
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            value="<%= typeof oldInput.email !== 'undefined' ? oldInput.email : '' %>"
+            placeholder="you@example.com"
+            required
+            class="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition duration-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+          />
+        </label>
+
+        <label class="block">
+          <span class="mb-2 block text-sm font-medium text-slate-700">Register as</span>
+          <select
+            id="userType"
+            name="userType"
+            required
+            class="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition duration-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+          >
+            <option 
+              name="userType" 
+              value="guest" 
+              <%= typeof oldInput !== 'undefined' && oldInput.userType === 'guest' ? 'selected' : '' %>>
+              Guest
+            </option>
+            <option 
+              name="userType" 
+              value="admin" 
+              <%= typeof oldInput !== 'undefined' && oldInput.userType === 'admin' ? 'selected' : '' %>>
+              Home Admin
+            </option>
+          </select>
+        </label>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="block">
+            <span class="mb-2 block text-sm font-medium text-slate-700">Create Password</span>
+            <input 
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Enter strong password"
+              required
+              class="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition duration-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+            />
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-sm font-medium text-slate-700">Confirm password</span>
+            <input 
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Confirm your password"
+              required
+              class="w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition duration-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100"
+            />
+          </label>
+        </div>
+
+        <label class="flex items-start gap-3 text-sm text-slate-700">
+          <input 
+            id="terms"
+            name="terms"
+            type="checkbox"
+            required
+            class="mt-1 h-4 w-4 rounded border-slate-300 text-rose-500 focus:ring-rose-400"
+          />
+          <span class="leading-5">
+            I agree to the
+            <a href="/terms" class="font-semibold text-rose-600 hover:underline">Terms of Service</a>
+            and
+            <a href="/privacy" class="font-semibold text-rose-600 hover:underline">Privacy Policy</a>.
+          </span>
+        </label>
+
+        <button 
+          type="submit"
+          class="inline-flex w-full items-center justify-center rounded-3xl bg-rose-500 px-5 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-300"
+        >
+          Create Account
+        </button>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-slate-500">
+        Already have an account?
+        <a href="/login" class="font-semibold text-rose-600 hover:underline">Sign in</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<%- include("../partials/footer") %>
+
+</body>
+</html>
+

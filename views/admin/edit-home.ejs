@@ -1,0 +1,82 @@
+
+<%- include("../partials/header") %>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<%- include("../partials/nav") %>
+
+<main class="flex-grow flex items-center justify-center px-4">
+
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+      <%= editing ? "Edit" : "Register" %> Your Home Below!
+    </h2>
+
+    <form action="/admin/<%= editing ? 'edit-home': 'add-home' %>" method="POST" enctype="multipart/form-data" class="space-y-4">
+      
+      <input type="hidden" name="id" value="<%= editing ? home._id : '' %>" /> 
+      <input 
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 outline-none"
+        type="text" 
+        name="houseName" 
+        value="<%= editing ? home.houseName : '' %>"
+        placeholder="Home name"
+        required />
+      <input 
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 outline-none"
+        type="text" 
+        name="price" 
+        value="<%= editing ? home.price : '' %>"
+        placeholder="Price per night"
+        required />
+      <input 
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 outline-none"
+        type="text" 
+        name="location" 
+        value="<%= editing ? home.location : '' %>"
+        placeholder="Location"
+        required />
+      <input 
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 outline-none"
+        type="text" 
+        name="rating" 
+        value="<%= editing ? home.rating : '' %>"
+        placeholder="Rating"
+        required />
+      <input 
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 outline-none"
+        type="file" 
+        name="photo"
+        accept=".png,.jpg,.jpeg,.pdf"
+        
+        />
+        <!--
+        required
+        accept=" image/* "
+        accept=" image/.jpeg, image/.png, image/.jpg "
+        accept=".png,.jpg,.jpeg,.pdf"
+        multiple :- we can upload multiple files --> 
+
+      <textarea 
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-rose-400 outline-none"
+        name="description" 
+        placeholder="Describe your home"
+        required ><%= editing ? home.description : '' %></textarea>
+
+      <button 
+        class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg font-semibold transition">
+        <%= editing ? 'Update Home' : 'Submit' %>
+      </button>
+
+    </form>
+
+  </div>
+
+</main>
+
+<%- include("../partials/footer") %>
+
+</body>
+</html>
+

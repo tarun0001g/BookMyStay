@@ -1,0 +1,97 @@
+
+<%- include("../partials/header") %>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- ✅ Navbar Added -->
+  <%- include("../partials/nav") %>
+
+  <!-- ✅ Detail Section -->
+  <section class="py-12 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Breadcrumb -->
+      <nav class="text-sm text-gray-500 mb-8">
+        <a href="/" class="hover:text-blue-600 transition-colors">Home</a> / <span class="text-gray-700">Property Details</span>
+      </nav>
+
+      <!-- Main Grid -->
+      <div class="grid lg:grid-cols-3 gap-12">
+
+        <!-- Left - Image Gallery -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-xl overflow-hidden shadow-lg h-96 md:h-[500px] lg:h-[600px]">
+            <img src="<%= home.photo %>" alt="<%= home.houseName %>" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+          </div>
+          <!-- Optional: Add thumbnail images if more photos available -->
+        </div>
+
+        <!-- Right - Details Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8 lg:sticky lg:top-8 h-fit">
+
+          <!-- Name & Rating -->
+          <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+            <%= home.houseName %>
+          </h1>
+          <div class="flex items-center gap-2 mb-6 pb-6 border-b border-gray-200">
+            <div class="flex text-yellow-400">
+              <% for (let i = 0; i < Math.floor(home.rating); i++) { %>
+                <span>⭐</span>
+              <% } %>
+            </div>
+            <span class="font-semibold text-gray-800 text-lg"><%= home.rating %>/5</span>
+            <span class="text-gray-500">(Based on reviews)</span>
+          </div>
+
+          <!-- Location -->
+          <div class="mb-8">
+            <p class="text-gray-500 text-sm uppercase tracking-wide mb-2">Location</p>
+            <p class="text-gray-800 font-medium flex items-center gap-2 text-lg">
+              <span class="text-red-500">📍</span><%= home.location %>
+            </p>
+          </div>
+
+          <!-- Price -->
+          <div class="mb-8 pb-8 border-b border-gray-200">
+            <p class="text-gray-500 text-sm uppercase tracking-wide mb-3">Price per Night</p>
+            <p class="text-4xl font-bold text-rose-500">
+              ₹<%= home.price %>
+            </p>
+            <p class="text-sm text-gray-600 mt-1">Includes taxes and fees</p>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-8 pb-8 border-b border-gray-200">
+            <p class="text-gray-500 text-sm uppercase tracking-wide mb-3">Description</p>
+            <p class="text-gray-700 leading-relaxed text-base">
+              <%= home.description %>
+            </p>
+          </div>
+
+          <!-- Buttons -->
+        <div class="space-y-4">
+          <button class="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+            Book Now
+          </button>
+
+          <%- include("../partials/favourite") %>
+
+          <!-- Download Rules PDF -->
+          <a
+            href="/rules/<%= home._id %>"
+            class="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+          >
+            📄 Download House Rules
+          </a>
+        </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</body>
+</html>
+

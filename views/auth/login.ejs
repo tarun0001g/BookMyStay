@@ -1,0 +1,62 @@
+
+<%- include("../partials/header") %>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<%- include("../partials/nav") %>
+
+<main class="grow flex items-center justify-center px-4 py-10">
+
+  <div class="bg-white shadow-2xl rounded-[2rem] p-8 w-full max-w-md border border-gray-200">
+
+    <div class="mb-8 text-center">
+      <p class="text-sm font-semibold uppercase tracking-[0.3em] text-rose-500">Welcome Back</p>
+      <h2 class="mt-4 text-3xl font-bold text-slate-900">Login to Your Account</h2>
+      <p class="mt-3 text-sm text-slate-500"></p>
+    </div>
+
+    <form action="/login" method="POST" class="space-y-5">
+
+      <%- include("../partials/errors") %>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+        <input id="email"
+          class="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition"
+          type="email"
+          name="email"
+          value="<%= typeof oldInput.email !== 'undefined' ? oldInput.email : '' %>"
+          placeholder="you@example.com"
+          required />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-slate-700 mb-2">Password</label>
+        <input id="password"
+          class="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-rose-400 focus:border-rose-400 outline-none transition"
+          type="password"
+          name="password"
+          placeholder="Enter your password"
+          required />
+      </div>
+
+      <button
+        class="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-2xl font-semibold transition">
+        Login
+      </button>
+
+      <div class="text-center text-sm text-slate-500">
+        <p>Don't have an account yet? <a href="/signup" class="text-rose-500 hover:text-rose-600 font-semibold">Sign Up</a></p>
+      </div>
+
+    </form>
+
+  </div>
+
+</main>
+
+<%- include("../partials/footer") %>
+
+</body>
+</html>
+
