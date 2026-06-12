@@ -83,10 +83,6 @@ app.use(session({ //This is storing session data in our device's memory, so each
 
 
 app.use((req, res, next) => {
-  //console.log("Middleware for checking cookies", req.get("Cookie")); // we will get:- Middleware for checking cookies isLoggedIn=true
-  //Above cookie is coming in string format, we need to convert it into obj format. for that we need to break cookie using split method.
-  //req.isLoggedIn = req.get("Cookie")? req.get("Cookie").split("=")[1] === "true" : false; // checking... if true then req.isLoggedin=true;
-  //Now we will read the data of session instead of direct cookie. 
   req.isLoggedIn = req.session.isLoggedIn;
   next();
 })
@@ -116,7 +112,7 @@ mongoose.connect(mongoUrl)
   .then( () => { //First we will connect to DB
     console.log("Connected with MongoDB");
     app.listen(PORT, ()=>{
-      console.log(`The server is running at http://localhost:${PORT}`); //Then after we will start our server.
+      console.log(`The server is running at http://localhost:${PORT}`); 
     });
   })
   .catch(error => {
