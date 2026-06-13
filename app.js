@@ -10,6 +10,11 @@ const MongoStore = require("connect-mongodb-session")(session); //creating a ses
 const { default: mongoose } = require('mongoose');
 const mongoUrl = process.env.MONGO_URL;
 
+const fs = require("fs");
+
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads", { recursive: true });
+}
 
 //Local/Internal Modules
 const authRouter = require('./routes/authRouter.js');
@@ -106,7 +111,7 @@ app.use(errorsController.pageNotFound);
 
 
 //MongoDB connection and server start
-const PORT = 3007;
+const PORT = process.env.PORT || 3007;
 
 mongoose.connect(mongoUrl)
   .then( () => { //First we will connect to DB
