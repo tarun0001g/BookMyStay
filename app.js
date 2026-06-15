@@ -25,6 +25,8 @@ const errorsController = require("./controllers/errors.js"); //we Imported as a 
 const { error } = require('console');
 const multer = require('multer');
 
+//Now we will not use multer.diskStorage...., Instead we are using cloudinary cloud
+const cloudinaryStorage = require("./config/cloudinaryStorage");
 
 const app = express();
 app.set("view engine", "ejs"); // Tells Express: Use EJS files for frontend rendering”
@@ -35,41 +37,58 @@ const store = new MongoStore({
   collection: "sessions"
 })
 
-const randomString = (length) => {
-  const characters = "abcdefghijklmnopqrstuvwxyz";
-  let result = '';
-  for (let i=0; i<length; i++){//"Pick one random letter from a-z and add it to the result string."
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }//Math.floor removes decimal par of number, & then find char and put it in result string.
-  return result;
-}
+//-----------------USING LOCAL STORAGE FOR HOME PHOTOS -----------------------------//
 
-const fileStoreOption = multer.diskStorage({ //{dest: 'uploads/'}
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); //define where to save the file
-  },
-  filename: (req, file, cb) => { //cb is callback fn 
-    cb(null, randomString(9) + "-" + file.originalname);//defines what will be the name of file
-  }
-});
+// const randomString = (length) => {
+//   const characters = "abcdefghijklmnopqrstuvwxyz";
+//   let result = '';
+//   for (let i=0; i<length; i++){//"Pick one random letter from a-z and add it to the result string."
+//     result += characters.charAt(Math.floor(Math.random() * characters.length));
+//   }//Math.floor removes decimal par of number, & then find char and put it in result string.
+//   return result;
+// }
+
+// const fileStoreOption = multer.diskStorage({ //{dest: 'uploads/'}
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/'); //define where to save the file
+//   },
+//   filename: (req, file, cb) => { //cb is callback fn 
+//     cb(null, randomString(9) + "-" + file.originalname);//defines what will be the name of file
+//   }
+// });
 
 //Backend file type filter applied
-const fileFilter = (req, file, cb) => {
-  if(file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg"){
-    cb(null, true); //accept the file and save it
-  }
-  else{
-    cb(null, false); // reject the file & don't save it
-  }
-}
+// const fileFilter = (req, file, cb) => {
+//   if(file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg"){
+//     cb(null, true); //accept the file and save it
+//   }
+//   else{
+//     cb(null, false); // reject the file & don't save it
+//   }
+// }
 
 // const multerOptions = {
 //       storage: fileStoreOption;
 //       fileFilter: fileFilter,
 // }
 
-app.use(multer({storage: fileStoreOption, fileFilter: fileFilter}).single('photo')); // a middleware used for saving file with given name & destination
+// app.use(
+//   multer({
+//   storage: fileStoreOption, 
+//   fileFilter: fileFilter
+// }).single('photo')); // a middleware used for saving file with given name & destination
 //Above line tells: Accept only ONE uploaded file with input named "photo" and save it using fileStoreOption.
+//--------------------------------------------------------------------------------------//
+
+//------NOW WE WILL USE CLOUDINARY STORAGE INSTEAD OF LOCAL STORAGE FOR IMAGES.---------//
+
+app.use(
+  multer({
+    storage: cloudinaryStorage
+  }).single("photo")
+);
+
+
 
 app.use(express.urlencoded()); //Converts form data into: req.body object
 app.use(express.static(path.join(rootDir, 'public')));

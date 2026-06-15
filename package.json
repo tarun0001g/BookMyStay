@@ -15,6 +15,7 @@
     "@tailwindcss/cli": "^4.2.2",
     "autoprefixer": "^10.4.27",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^1.41.3",
     "connect-mongodb-session": "^5.0.0",
     "dotenv": "^17.4.2",
     "ejs": "^5.0.1",
@@ -24,6 +25,7 @@
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.1",
     "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.22.2",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2"

@@ -1,75 +1,124 @@
-# BookMyStay
+# 🏡 BookMyStay
 
-A modern full-stack property listing and accommodation management platform built with Node.js, Express.js, MongoDB, and EJS.
+A full-stack property listing and accommodation management platform built with **Node.js, Express.js, MongoDB, EJS, and Tailwind CSS**.
 
-BookMyStay allows users to explore property listings, manage favorites, upload property images, create accounts, and securely access personalized features. The project demonstrates the complete lifecycle of building a production-style web application, including backend architecture, database integration, authentication, authorization, session management, file handling, and responsive UI development.
+BookMyStay enables users to discover properties, view detailed listings, save favourites, and securely manage their accounts. Administrators can create, update, and manage property listings with image uploads powered by Cloudinary.
+
+This project was developed to gain hands-on experience in real-world full-stack development by implementing backend architecture, database integration, authentication, authorization, file handling, cloud storage, and responsive user interfaces.
 
 ---
 
-## Features
+## 🚀 Live Demo
 
-### User Features
+**Live Application:** https://bookmystay-m1dn.onrender.com
+
+---
+
+## 📸 Application Screenshots
+
+### 🏠 Home Page
+
+![Home Page](./screenshots/home-page.png)
+
+### 🔍 Browse Homes
+
+![Browse Homes](./screenshots/all-homes.png)
+
+### 🏡 Property Details
+
+![Property Details](./screenshots/home-details.png)
+
+### ❤️ Favourite Homes
+
+![Favourite Homes](./screenshots/favourites.png)
+
+### 🔐 Login
+
+![Login](./screenshots/login.png)
+
+### 📝 Signup
+
+![Signup](./screenshots/signup.png)
+
+### ⚙️ Admin Dashboard
+
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+
+### ➕ Add New Property
+
+![Add Home](./screenshots/add-home.png)
+
+---
+
+# ✨ Features
+
+## 👤 User Features
 
 * Browse available properties
 * View detailed property information
-* Add properties to favorites
+* Save and manage favourite properties
 * User registration and login
 * Secure session-based authentication
+* Download property house rules
 * Personalized user experience
 
-### Admin Features
+## 🛠️ Admin Features
 
-* Add new properties
-* Edit existing property details
+* Add new property listings
+* Edit existing properties
 * Delete property listings
-* Upload and manage property images
+* Upload property images
 * Manage platform content
+* Cloud-based image storage
 
-### Security Features
+## 🔒 Security Features
 
-* Password hashing using bcrypt
-* Input validation and sanitization
+* Password hashing using bcryptjs
 * Session-based authentication
-* Role-based authorization
-* Protected routes
-* File type and size validation
+* Protected admin routes
+* Input validation using express-validator
+* File type validation
+* Secure database storage
+* Authorization middleware
 
-### File Management
+## ☁️ Cloud Storage
 
-* Property image uploads
-* Secure file storage
-* File download support
-* Automatic file validation
+* Cloudinary image hosting
+* Persistent image storage
+* Optimized image delivery
+* No dependency on local server storage
 
 ---
 
-## Tech Stack
+# 🏗️ Tech Stack
 
-### Backend
+## Backend
 
 * Node.js
 * Express.js
 * Mongoose
 * Multer
+* Cloudinary
 * bcryptjs
 * express-session
 * connect-mongodb-session
 * express-validator
 
-### Database
+## Database
 
 * MongoDB
 * MongoDB Atlas
-* MySQL (database learning and integration practice)
+* MySQL (Learning & Practice Integration)
 
-### Frontend
+## Frontend
 
 * EJS
 * Tailwind CSS
 * HTML5
 * CSS3
+* JavaScript
 
-### Development Tools
+## Development Tools
 
 * NPM
 * Nodemon
@@ -78,11 +127,17 @@ BookMyStay allows users to explore property listings, manage favorites, upload p
 * Autoprefixer
 * Concurrently
 
+## Deployment
+
+* Render
+* MongoDB Atlas
+* Cloudinary
+
 ---
 
-## Project Architecture
+# 🏛️ Project Architecture
 
-The application follows the MVC (Model-View-Controller) architecture pattern.
+The application follows the **MVC (Model-View-Controller)** architecture.
 
 ```text
 BookMyStay
@@ -90,119 +145,137 @@ BookMyStay
 ├── controllers
 ├── models
 ├── routes
+├── middleware
+├── utility
 ├── views
 │   ├── partials
 │   └── pages
 ├── public
 │   ├── css
-│   ├── images
-│   └── js
+│   ├── js
+│   └── images
+├── screenshots
 ├── uploads
-├── middleware
-├── utility
-└── app.js
+├── app.js
+└── package.json
 ```
 
-### MVC Structure
+## MVC Breakdown
 
-**Models**
+### Models
 
-* Database interaction
-* Schema definitions
+* MongoDB schema definitions
+* Database operations
 * Business logic
 
-**Views**
+### Views
 
 * EJS templates
 * Dynamic rendering
-* Reusable partials
+* Reusable components
 
-**Controllers**
+### Controllers
 
 * Request handling
 * Validation
-* Response management
+* Application logic
 
-**Routes**
+### Routes
 
-* Application endpoints
-* Route organization
+* Endpoint management
 * Middleware integration
+* Route organization
 
 ---
 
-## Key Concepts Implemented
+# 🧠 Concepts Implemented
 
-### Backend Development
+## Node.js Concepts
 
-* RESTful Routing
-* Middleware Architecture
-* Request & Response Lifecycle
-* Error Handling
+* File System Operations
+* Event Loop
 * Async/Await
-* Modular Code Organization
+* Callbacks
+* Module System
+* Error Handling
+* NPM Package Management
 
-### Database Management
+## Express.js Concepts
+
+* Middleware Architecture
+* Routing
+* Request & Response Lifecycle
+* Body Parsing
+* Static File Serving
+* Error Handling Middleware
+
+## Database Concepts
 
 * CRUD Operations
 * Schema Design
-* Data Relationships
-* Database Persistence
-* Query Optimization
+* MongoDB Collections
+* Data Persistence
+* Querying
+* Relationships
+* Validation
 
-### Authentication & Authorization
+## Authentication & Authorization
 
 * User Registration
 * Login & Logout
-* Password Encryption
+* Password Hashing
 * Session Management
 * Access Control
+* Protected Routes
 
-### File Handling
+## File Handling
 
 * Image Uploads
+* Cloud Storage Integration
 * File Validation
-* Storage Management
-* Download Functionality
+* Media Management
 
 ---
 
-## Installation
+# ⚙️ Installation
 
-### Clone Repository
-
-```bash
-git clone https://github.com/your-username/bookmystay.git
-```
-
-### Navigate to Project
+## Clone Repository
 
 ```bash
-cd bookmystay
+git clone https://github.com/tarun0001g/BookMyStay.git
 ```
 
-### Install Dependencies
+## Navigate Into Project
+
+```bash
+cd BookMyStay
+```
+
+## Install Dependencies
 
 ```bash
 npm install
 ```
 
-### Create Environment Variables
+## Environment Variables
 
 Create a `.env` file in the root directory:
 
 ```env
-MONGODB_URI=your_mongodb_connection_string
-SESSION_SECRET=your_secret_key
+MONGO_URL=your_mongodb_connection_string
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-### Run Development Server
+## Run Development Server
 
 ```bash
 npm run dev
 ```
 
-### Start Application
+## Start Production Server
 
 ```bash
 npm start
@@ -210,45 +283,57 @@ npm start
 
 ---
 
-## Future Enhancements
+# 🌟 Future Enhancements
 
-The following features are planned for future releases:
+The following features are planned for future development:
 
-* Booking System
+* Property Booking System
 * Property Reviews & Ratings
-* Advanced Search Functionality
-* Filter-Based Property Discovery
-* User Profile Management
+* Advanced Search
+* Filter-Based Search
+* User Profiles
 * JWT Authentication
 * Email Verification
-* Admin Dashboard Analytics
 * Booking History
+* Admin Analytics Dashboard
 * Payment Gateway Integration
-* Cloud Image Storage
 * Responsive User Dashboard
+* Property Availability Calendar
 
 ---
 
-## Learning Outcomes
+# 📚 Learning Outcomes
 
-Through the development of BookMyStay, the following areas were explored and implemented:
+This project helped strengthen practical understanding of:
 
 * Full-Stack Web Development
-* Backend Application Development
+* Backend Development
 * MVC Architecture
-* Database Design
+* RESTful Application Design
 * Authentication & Authorization
 * Session Management
-* File Upload Handling
+* Database Design
+* Cloud Storage Integration
 * Secure Coding Practices
-* Server-Side Rendering
-* RESTful Application Design
-* Production-Oriented Project Structure
+* Deployment & Production Hosting
 
 ---
 
-## Project Status
+# 🚀 Deployment
 
-🚀 Active Development
+The application is deployed using:
 
-New features and improvements are continuously being added to enhance functionality, scalability, security, and user experience.
+* Render (Application Hosting)
+* MongoDB Atlas (Database)
+* Cloudinary (Image Storage)
+
+---
+
+# 👨‍💻 Author
+
+**Tarun Makavana**
+
+Passionate Full-Stack Developer focused on building scalable web applications and continuously improving development skills through hands-on projects.
+
+GitHub: https://github.com/tarun0001g
+

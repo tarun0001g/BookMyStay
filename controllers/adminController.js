@@ -48,32 +48,72 @@ exports.getEditHome = (req, res, next) => {
 }
 
 
-exports.postAddHome =  (req, res, next) => {
+// exports.postAddHome =  (req, res, next) => {
  
-  const { houseName, price, location, rating, description} = req.body;
-  console.log(houseName, price, location, rating, description);
-  console.log(req.file);
+//   const { houseName, price, location, rating, description} = req.body;
+//   console.log(houseName, price, location, rating, description);
+//   console.log(req.file);
 
-  if(!req.file){
-    return res.status(422).send("Please upload a valid image file!");
+//   // if(!req.file){
+//   //   return res.status(422).send("Please upload a valid image file!");
+//   // }
+
+//   if (!req.file) {
+//     return res.status(422).send("Please upload an image!");
+//   }
+
+
+//   const photo = req.file.path; // it will be the path of uploaded file on our server.(in uploads\image.. )
+
+//   const home = new Home ( { //saving home with below details on MongoDB
+//     houseName, 
+//     price, 
+//     location, 
+//     rating, 
+//     photo, 
+//     description
+//    } );
+
+//   home.save().then(() => {
+//     console.log("Home Saved Successfully!");
+//   });  
+//   res.redirect('/admin/admin-home-list');
+// }
+
+exports.postAddHome = async (req, res, next) => {
+  try {
+
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
+    const { houseName, price, location, rating, description } = req.body;
+
+    if (!req.file) {
+      return res.status(422).send("Please upload an image!");
+    }
+
+    const photo = req.file.path;
+
+    const home = new Home({
+      houseName,
+      price,
+      location,
+      rating,
+      photo,
+      description
+    });
+
+    await home.save();
+
+    res.redirect('/admin/admin-home-list');
+
+  } catch (err) {
+    console.log("ERROR OCCURRED:");
+    console.log(err);
+    res.status(500).send(err.message);
   }
+};
 
-  const photo = req.file.path; // it will be the path of uploaded file on our server.(in uploads\image.. )
-
-  const home = new Home ( { //saving home with below details on MongoDB
-    houseName, 
-    price, 
-    location, 
-    rating, 
-    photo, 
-    description
-   } );
-
-  home.save().then(() => {
-    console.log("Home Saved Successfully!");
-  });  
-  res.redirect('/admin/admin-home-list');
-}
 
 //After Editing Home
 exports.postEditHome =  (req, res, next) => {
@@ -85,14 +125,18 @@ exports.postEditHome =  (req, res, next) => {
     home.rating = rating;
     home.description = description;
 
-    if(req.file){
-      fs.unlink(home.photo, (err) => {
-        if(err){
-          console.log("Error while deleting old home home's photo!!", err);
-        }//unlink() it will delete file from server. It takes path of file to be deleted and callback function as arguments.
-      });
-      home.photo = req.file.path; //if new photo is uploaded by home admin then & only then update with current photo path
+    if (req.file) {
+      home.photo = req.file.path;
     }
+
+    // if(req.file){
+    //   fs.unlink(home.photo, (err) => {
+    //     if(err){
+    //       console.log("Error while deleting old home home's photo!!", err);
+    //     }//unlink() it will delete file from server. It takes path of file to be deleted and callback function as arguments.
+    //   });
+    //   home.photo = req.file.path; //if new photo is uploaded by home admin then & only then update with current photo path
+    // }
 
     home.save().then(result => {
       console.log("Home Updated", result);
