@@ -336,4 +336,5 @@ The application is deployed using:
 Passionate Full-Stack Developer focused on building scalable web applications and continuously improving development skills through hands-on projects.
 
 GitHub: https://github.com/tarun0001g
+LinkedIn: www.linkedin.com/in/tarun-makavana-52601427a
 
