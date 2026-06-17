@@ -24,8 +24,8 @@ Email: admin@gmail.com
 Password: Admin@123
 
 Guest:
-Email: guest@gmail.com
-Password: Guest@123
+Email: tarun0003g@gmail.com
+Password: Tarun@123
 ---
 
 ## 📸 Application Screenshots
