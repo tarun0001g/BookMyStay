@@ -13,18 +13,14 @@ This project was developed to gain hands-on experience in real-world full-stack 
 **Live Application:** https://bookmystay-m1dn.onrender.com
 
 ---
-## 🔑 Demo
+## 🔑 Demo Credentials
 
-You can either:
-- Register a new account, or
-- Use the demo credentials below.
-
-Admin:
+### Admin Account
 Email: admin@gmail.com
 Password: Admin@123
 
-Guest:
-Email: tarun0003g@gmail.com
+### Guest Account
+Email: tarun0003g@gmail.com 
 Password: Tarun@123
 ---
 
