@@ -14,6 +14,16 @@ This project was developed to gain hands-on experience in real-world full-stack 
 **Live Application:** https://bookmystay-m1dn.onrender.com
 
 ---
+## 🔑 Demo Credentials
+
+### Admin Account
+Email: admin@gmail.com
+Password: Admin@123
+
+### Guest Account
+Email: tarun0003g@gmail.com 
+Password: Tarun@123
+---
 
 ## 📸 Application Screenshots
 
@@ -337,4 +347,5 @@ The application is deployed using:
 Passionate Full-Stack Developer focused on building scalable web applications and continuously improving development skills through hands-on projects.
 
 GitHub: https://github.com/tarun0001g
+LinkedIn: www.linkedin.com/in/tarun-makavana-52601427a
 
