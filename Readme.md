@@ -1,5 +1,4 @@
 # 🏡 BookMyStay
-hii
 
 A full-stack property listing and accommodation management platform built with **Node.js, Express.js, MongoDB, EJS, and Tailwind CSS**.
 
