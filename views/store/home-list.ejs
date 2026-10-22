@@ -23,6 +23,13 @@
     <h3 class="text-2xl font-bold text-gray-800 mb-6">
       Available Homes
     </h3>
+    <form method="GET" action="/homes" class="mb-6 flex flex-wrap gap-3">
+      <input name="q" value="<%= query.q || '' %>" placeholder="Name or location" class="border rounded px-3 py-2">
+      <input name="minPrice" type="number" min="0" value="<%= query.minPrice || '' %>" placeholder="Min price" class="border rounded px-3 py-2">
+      <input name="maxPrice" type="number" min="0" value="<%= query.maxPrice || '' %>" placeholder="Max price" class="border rounded px-3 py-2">
+      <select name="sort" class="border rounded px-3 py-2"><option value="price" <%= query.sort !== 'rating' ? 'selected' : '' %>>Price</option><option value="rating" <%= query.sort === 'rating' ? 'selected' : '' %>>Rating</option></select>
+      <button class="bg-rose-500 text-white rounded px-4 py-2">Search</button>
+    </form>
 
     <!-- Grid -->
     <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -67,9 +74,9 @@
               <a href="/homes/<%= home._id %>" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition-colors p-2 pl-5"  >
                 View Details
               </a>
-              <!-- <button class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg font-semibold transition-colors">
+              <a href="/homes/<%= home._id %>" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg font-semibold transition-colors text-center">
                 Book Now
-              </button> -->
+              </a>
                <%- include("../partials/favourite", {home: home}) %>
             </div>
           </div>
@@ -77,6 +84,8 @@
       <% }) %>
 
     </div>
+    <% const params = new URLSearchParams({ ...query, page: String(page) }); %>
+    <div class="flex justify-between mt-8"><% if (page > 1) { %><a class="text-rose-600" href="/homes?<%= new URLSearchParams({ ...query, page: String(page - 1) }) %>">Previous</a><% } else { %><span></span><% } %><span>Page <%= page %> of <%= pages %></span><% if (page < pages) { %><a class="text-rose-600" href="/homes?<%= new URLSearchParams({ ...query, page: String(page + 1) }) %>">Next</a><% } %></div>
 
   </main>
 
