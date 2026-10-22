@@ -1,350 +1,122 @@
-# 🏡 BookMyStay
+# BookMyStay
 
-A full-stack property listing and accommodation management platform built with **Node.js, Express.js, MongoDB, EJS, and Tailwind CSS**.
+BookMyStay is an Express 5 and MongoDB JSON API for browsing homes, saving favourites, booking stays, and managing listings. Cloudinary stores listing images. Legacy EJS templates remain in `views/` for the client transition.
 
-BookMyStay enables users to discover properties, view detailed listings, save favourites, and securely manage their accounts. Administrators can create, update, and manage property listings with image uploads powered by Cloudinary.
+## Screenshots
 
-This project was developed to gain hands-on experience in real-world full-stack development by implementing backend architecture, database integration, authentication, authorization, file handling, cloud storage, and responsive user interfaces.
+Screenshots are in `screenshots/`. They may need to be refreshed to reflect the current UI.
 
----
+## Stack and access control
 
-## 🚀 Live Demo
+The app uses Node.js, Express 5, Mongoose, MongoDB, express-session, bcryptjs, Multer, and Cloudinary. It has guest and admin roles. `isAuth` protects signed-in API routes and `isAdmin` restricts admin endpoints.
 
-**Live Application:** https://bookmystay-m1dn.onrender.com
-
----
-## 🔑 Demo Credentials
-
-### Admin Account
-Email: admin@gmail.com
-Password: Admin@123
-
-### Guest Account
-Email: tarun0003g@gmail.com 
-Password: Tarun@123
----
-
-## 📸 Application Screenshots
-
-### 🏠 Home Page
-
-![Home Page](./screenshots/home-page.png)
-
-### 🔍 Browse Homes
-
-![Browse Homes](./screenshots/all-homes.png)
-
-### 🏡 Property Details
-
-![Property Details](./screenshots/home-details.png)
-
-### ❤️ Favourite Homes
-
-![Favourite Homes](./screenshots/favourites.png)
-
-### 🔐 Login
-
-![Login](./screenshots/login.png)
-
-### 📝 Signup
-
-![Signup](./screenshots/signup.png)
-
-### ⚙️ Admin Dashboard
-
-![Admin Dashboard](./screenshots/admin-dashboard.png)
-
-### ➕ Add New Property
-
-![Add Home](./screenshots/add-home.png)
-
----
-
-# ✨ Features
-
-## 👤 User Features
-
-* Browse available properties
-* View detailed property information
-* Save and manage favourite properties
-* User registration and login
-* Secure session-based authentication
-* Download property house rules
-* Personalized user experience
-
-## 🛠️ Admin Features
-
-* Add new property listings
-* Edit existing properties
-* Delete property listings
-* Upload property images
-* Manage platform content
-* Cloud-based image storage
-
-## 🔒 Security Features
-
-* Password hashing using bcryptjs
-* Session-based authentication
-* Protected admin routes
-* Input validation using express-validator
-* File type validation
-* Secure database storage
-* Authorization middleware
-
-## ☁️ Cloud Storage
-
-* Cloudinary image hosting
-* Persistent image storage
-* Optimized image delivery
-* No dependency on local server storage
-
----
-
-# 🏗️ Tech Stack
-
-## Backend
-
-* Node.js
-* Express.js
-* Mongoose
-* Multer
-* Cloudinary
-* bcryptjs
-* express-session
-* connect-mongodb-session
-* express-validator
-
-## Database
-
-* MongoDB
-* MongoDB Atlas
-* MySQL (Learning & Practice Integration)
-
-## Frontend
-
-* EJS
-* Tailwind CSS
-* HTML5
-* CSS3
-* JavaScript
-
-## Development Tools
-
-* NPM
-* Nodemon
-* VS Code
-* PostCSS
-* Autoprefixer
-* Concurrently
-
-## Deployment
-
-* Render
-* MongoDB Atlas
-* Cloudinary
-
----
-
-# 🏛️ Project Architecture
-
-The application follows the **MVC (Model-View-Controller)** architecture.
+## Project structure
 
 ```text
-BookMyStay
-│
-├── controllers
-├── models
-├── routes
-├── middleware
-├── utility
-├── views
-│   ├── partials
-│   └── pages
-├── public
-│   ├── css
-│   ├── js
-│   └── images
-├── screenshots
-├── uploads
-├── app.js
-└── package.json
+config/       Database, Cloudinary, and session configuration
+controllers/  JSON API handlers for auth, admin, and stay resources
+middleware/   Authentication, CSRF protection, and upload handling
+models/       User, Home, and Booking schemas
+routes/       JSON API endpoint definitions
+scripts/      Admin account creation and home-owner migration tools
+tests/        Jest and Supertest application tests
+utility/      Shared file and domain helper functions
+validators/   Signup and home form validation chains
+views/        Retained EJS templates for the client transition
+public/       Tailwind source and generated CSS assets
+rules/        Shared house rules PDF
+screenshots/  Application screenshots
+app.js        Express setup, middleware order, and server entry point
+package.json  Application scripts and dependencies
+Readme.md     Setup, project structure, and usage documentation
 ```
 
-## MVC Breakdown
+## Setup
 
-### Models
+Install Node.js dependencies with `npm install`, then copy `.env.example` to `.env` and set each value. Required variables are `MONGO_URL`, `SESSION_SECRET`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `NODE_ENV`, and `PORT`.
 
-* MongoDB schema definitions
-* Database operations
-* Business logic
+Run `npm run build:css` to generate styles. Use `npm run dev` during development or `npm start` to start the server. The `/health` endpoint returns `{ "status": "ok" }`.
 
-### Views
+Create an administrator with `node scripts/createAdmin.js admin@example.com 'StrongPassword'`. The script creates or promotes that account. For existing listings, run `node scripts/assignOwner.js admin@example.com` once to assign homes to that admin.
 
-* EJS templates
-* Dynamic rendering
-* Reusable components
+## Bookings
 
-### Controllers
+Guests can reserve a home from its detail page. Check-in must be today or later, checkout must follow check-in, and a stay can be at most 30 nights. The server calculates the total using the current nightly price and rejects overlapping confirmed bookings. A guest can cancel their own future booking.
 
-* Request handling
-* Validation
-* Application logic
+## Scripts
 
-### Routes
+- `npm start`: start the production server
+- `npm run dev`: run nodemon and Tailwind watch
+- `npm run build:css`: create minified CSS
+- `npm test`: run Jest integration tests
+- `npm run lint`: run ESLint
+- `npm run format`: format JavaScript, JSON, and Markdown files
+- `npm run format:check`: check formatting without writing files
 
-* Endpoint management
-* Middleware integration
-* Route organization
+## Code style
 
----
+`config/` contains service setup, `middleware/` contains request-wide concerns,
+`models/` defines database schemas, `validators/` defines form rules,
+`controllers/` handles requests, and `routes/` maps URLs to middleware and
+handlers. Requires are grouped under `// Core modules`, `// External modules`,
+and `// Local modules` comments. Run `npm run format` and `npm run lint` before
+committing changes.
 
-# 🧠 Concepts Implemented
+## Tests
 
-## Node.js Concepts
+Run `npm test`. Tests use Jest, Supertest, and mongodb-memory-server. Uploads use in-memory storage and Cloudinary is mocked.
 
-* File System Operations
-* Event Loop
-* Async/Await
-* Callbacks
-* Module System
-* Error Handling
-* NPM Package Management
+## JSON API
 
-## Express.js Concepts
+The API uses session cookies and is mounted under `/api`. Fetch `/api/csrf`
+once per session and send its `csrfToken` in the `X-CSRF-Token` header on
+every `POST`, `PUT`, and `DELETE` request. This includes multipart home uploads.
+After login, replace the stored token with the `csrfToken` returned by the
+login response because authentication rotates the session token.
 
-* Middleware Architecture
-* Routing
-* Request & Response Lifecycle
-* Body Parsing
-* Static File Serving
-* Error Handling Middleware
+| Method | Endpoint                                        | Access           | Result                                    |
+| ------ | ----------------------------------------------- | ---------------- | ----------------------------------------- |
+| GET    | `/api/csrf`                                     | Public           | Session CSRF token                        |
+| GET    | `/api/auth/me`                                  | Signed in        | Current user, or 401                      |
+| POST   | `/api/auth/signup`                              | Public           | Creates a guest account (201)             |
+| POST   | `/api/auth/login`                               | Public           | Starts a session                          |
+| POST   | `/api/auth/logout`                              | Signed in        | Ends the session                          |
+| GET    | `/api/homes?q=&minPrice=&maxPrice=&sort=&page=` | Public           | Homes, page, and totalPages (12 per page) |
+| GET    | `/api/homes/:homeId`                            | Public           | One home                                  |
+| GET    | `/api/homes/:homeId/rules`                      | Signed in        | House rules PDF                           |
+| GET    | `/api/favourites`                               | Signed in        | Current user's favourite homes            |
+| POST   | `/api/favourites/:homeId`                       | Signed in        | Adds a favourite                          |
+| DELETE | `/api/favourites/:homeId`                       | Signed in        | Removes a favourite                       |
+| GET    | `/api/bookings`                                 | Signed in        | Current user's bookings                   |
+| POST   | `/api/bookings`                                 | Signed in        | Creates a booking                         |
+| POST   | `/api/bookings/:bookingId/cancel`               | Booking owner    | Cancels a future booking                  |
+| GET    | `/api/admin/homes`                              | Admin            | Lists the admin's own homes               |
+| POST   | `/api/admin/homes`                              | Admin            | Creates a home with a `photo` upload      |
+| PUT    | `/api/admin/homes/:homeId`                      | Home owner admin | Updates a home; photo is optional         |
+| DELETE | `/api/admin/homes/:homeId`                      | Home owner admin | Deletes an owned home                     |
 
-## Database Concepts
+API errors use the same JSON shape. Validation errors map field names to
+messages; authorization and not-found errors have an empty `errors` object.
 
-* CRUD Operations
-* Schema Design
-* MongoDB Collections
-* Data Persistence
-* Querying
-* Relationships
-* Validation
-
-## Authentication & Authorization
-
-* User Registration
-* Login & Logout
-* Password Hashing
-* Session Management
-* Access Control
-* Protected Routes
-
-## File Handling
-
-* Image Uploads
-* Cloud Storage Integration
-* File Validation
-* Media Management
-
----
-
-# ⚙️ Installation
-
-## Clone Repository
-
-```bash
-git clone https://github.com/tarun0001g/BookMyStay.git
+```json
+{
+  "message": "Please correct the highlighted fields.",
+  "errors": {
+    "email": "Enter a valid email address."
+  }
+}
 ```
 
-## Navigate Into Project
+The API uses 401 for unauthenticated requests, 403 for forbidden requests,
+404 for missing resources or routes, 409 for overlapping bookings, 422 for
+invalid input, and 500 for unexpected errors. EJS templates remain in
+`views/` for the planned client transition, but the server now serves JSON
+routes under `/api`.
 
-```bash
-cd BookMyStay
-```
+## Render deployment
 
-## Install Dependencies
+Set the environment variables listed in `.env.example` in Render. Use build command `npm install && npm run build:css` and start command `npm start`. Configure MongoDB Atlas network access and Cloudinary credentials for the deployed service.
 
-```bash
-npm install
-```
+## Current gaps
 
-## Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-MONGO_URL=your_mongodb_connection_string
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-```
-
-## Run Development Server
-
-```bash
-npm run dev
-```
-
-## Start Production Server
-
-```bash
-npm start
-```
-
----
-
-# 🌟 Future Enhancements
-
-The following features are planned for future development:
-
-* Property Booking System
-* Property Reviews & Ratings
-* Advanced Search
-* Filter-Based Search
-* User Profiles
-* JWT Authentication
-* Email Verification
-* Booking History
-* Admin Analytics Dashboard
-* Payment Gateway Integration
-* Responsive User Dashboard
-* Property Availability Calendar
-
----
-
-# 📚 Learning Outcomes
-
-This project helped strengthen practical understanding of:
-
-* Full-Stack Web Development
-* Backend Development
-* MVC Architecture
-* RESTful Application Design
-* Authentication & Authorization
-* Session Management
-* Database Design
-* Cloud Storage Integration
-* Secure Coding Practices
-* Deployment & Production Hosting
-
----
-
-# 🚀 Deployment
-
-The application is deployed using:
-
-* Render (Application Hosting)
-* MongoDB Atlas (Database)
-* Cloudinary (Image Storage)
-
----
-
-# 👨‍💻 Author
-
-**Tarun Makavana**
-
-Passionate Full-Stack Developer focused on building scalable web applications and continuously improving development skills through hands-on projects.
-
-GitHub: https://github.com/tarun0001g
-LinkedIn: www.linkedin.com/in/tarun-makavana-52601427a
-
+Reviews, payments, email verification, and an availability calendar are not implemented.

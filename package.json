@@ -1,37 +1,42 @@
 {
-  "name": "lec-10_BookMyStay",
+  "name": "bookmystay",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A home booking application built with Express, MongoDB, EJS and Tailwind CSS.",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
+    "dev": "concurrently \"nodemon app.js\" \"npm run tailwind\"",
     "tailwind": "tailwindcss -i ./public/style.css -o ./public/output.css --watch",
-    "dev": "concurrently \"npm run start\" \"npm run tailwind\""
+    "build:css": "tailwindcss -i ./public/style.css -o ./public/output.css --minify",
+    "format": "prettier --write \"**/*.{js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md}\"",
+    "test": "jest --runInBand",
+    "lint": "eslint ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@tailwindcss/cli": "^4.2.2",
-    "autoprefixer": "^10.4.27",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^1.41.3",
     "connect-mongodb-session": "^5.0.0",
     "dotenv": "^17.4.2",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.1.0",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.2",
-    "mongodb": "^7.2.0",
+    "helmet": "^8.1.0",
     "mongoose": "^9.6.1",
     "multer": "^2.1.1",
     "multer-storage-cloudinary": "^4.0.0",
-    "mysql2": "^3.22.2",
-    "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
-    "nodemon": "^3.1.14"
+    "eslint": "^9.25.0",
+    "jest": "^30.0.0",
+    "mongodb-memory-server": "^10.1.4",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.10",
+    "supertest": "^7.1.0"
   }
 }

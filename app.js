@@ -1,148 +1,144 @@
-//core module
+// Core modules
 const path = require('path');
+const fs = require('fs');
 
-require("dotenv").config();
+// Load environment variables from .env
+require('dotenv').config({ quiet: true });
 
-//External Module
-const express = require("express");
-const session = require("express-session");
-const MongoStore = require("connect-mongodb-session")(session); //creating a session Store for session data in MongoDB Database.
-const { default: mongoose } = require('mongoose');
-const mongoUrl = process.env.MONGO_URL;
+// External modules
+const express = require('express');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
-const fs = require("fs");
+// Local modules
+const connectDB = require('./config/db');
+const createSessionMiddleware = require('./config/session');
+const apiRouter = require('./routes/apiRouter');
+const csrf = require('./middleware/csrf');
+const { sendError } = require('./utility/apiResponse');
 
-if (!fs.existsSync("uploads")) {
-  fs.mkdirSync("uploads", { recursive: true });
+// Settings
+const PORT = process.env.PORT || 3007;
+const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.NODE_ENV === 'test';
+const FIFTEEN_MINUTES = 15 * 60 * 1000;
+const CLIENT_DIST_PATH = path.join(__dirname, 'client', 'dist');
+const CLIENT_INDEX_PATH = path.join(CLIENT_DIST_PATH, 'index.html');
+
+// Fail early if a required setting is missing
+if (!process.env.SESSION_SECRET) {
+  throw new Error('SESSION_SECRET is required');
+}
+if (!process.env.MONGO_URL) {
+  throw new Error('MONGO_URL is required');
 }
 
-//Local/Internal Modules
-const authRouter = require('./routes/authRouter.js');
-const storeRouter = require("./routes/storeRouter.js"); //router imported 
-const {adminRouter} = require("./routes/adminRouter.js"); //router imported as an object
-const rootDir = require("./utility/fileHelperUtility.js");
-const errorsController = require("./controllers/errors.js"); //we Imported as a specific value {} from object
-const { error } = require('console');
-const multer = require('multer');
-
-//Now we will not use multer.diskStorage...., Instead we are using cloudinary cloud
-const cloudinaryStorage = require("./config/cloudinaryStorage");
-
 const app = express();
-app.set("view engine", "ejs"); // Tells Express: Use EJS files for frontend rendering”
-app.set("views", path.join(__dirname, "views")); //Tells Express where EJS files are stored.
 
-const store = new MongoStore({
-  uri: mongoUrl,
-  collection: "sessions"
-})
+// Render runs behind a proxy, so trust it to get secure cookies working
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
 
-//-----------------USING LOCAL STORAGE FOR HOME PHOTOS -----------------------------//
-
-// const randomString = (length) => {
-//   const characters = "abcdefghijklmnopqrstuvwxyz";
-//   let result = '';
-//   for (let i=0; i<length; i++){//"Pick one random letter from a-z and add it to the result string."
-//     result += characters.charAt(Math.floor(Math.random() * characters.length));
-//   }//Math.floor removes decimal par of number, & then find char and put it in result string.
-//   return result;
-// }
-
-// const fileStoreOption = multer.diskStorage({ //{dest: 'uploads/'}
-//   destination: (req, file, cb) => {
-//     cb(null, 'uploads/'); //define where to save the file
-//   },
-//   filename: (req, file, cb) => { //cb is callback fn 
-//     cb(null, randomString(9) + "-" + file.originalname);//defines what will be the name of file
-//   }
-// });
-
-//Backend file type filter applied
-// const fileFilter = (req, file, cb) => {
-//   if(file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg"){
-//     cb(null, true); //accept the file and save it
-//   }
-//   else{
-//     cb(null, false); // reject the file & don't save it
-//   }
-// }
-
-// const multerOptions = {
-//       storage: fileStoreOption;
-//       fileFilter: fileFilter,
-// }
-
-// app.use(
-//   multer({
-//   storage: fileStoreOption, 
-//   fileFilter: fileFilter
-// }).single('photo')); // a middleware used for saving file with given name & destination
-//Above line tells: Accept only ONE uploaded file with input named "photo" and save it using fileStoreOption.
-//--------------------------------------------------------------------------------------//
-
-//------NOW WE WILL USE CLOUDINARY STORAGE INSTEAD OF LOCAL STORAGE FOR IMAGES.---------//
-
+// Security headers: allow our own files plus Cloudinary images
 app.use(
-  multer({
-    storage: cloudinaryStorage
-  }).single("photo")
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        upgradeInsecureRequests: null,
+      },
+    },
+  }),
 );
 
+// Static files and form parsing
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
+// Health check used by Render
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
-app.use(express.urlencoded()); //Converts form data into: req.body object
-app.use(express.static(path.join(rootDir, 'public')));
-app.use('/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use('/admin/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use('/homes/uploads', express.static(path.join(rootDir, 'uploads')));
+// MongoDB stores production sessions; tests use a memory store.
+app.use(
+  createSessionMiddleware({
+    isTest,
+    isProduction,
+    mongoUrl: process.env.MONGO_URL,
+    secret: process.env.SESSION_SECRET,
+  }),
+);
 
+// CSRF protection guards every state-changing API request.
+app.use(csrf);
 
-app.use(session({ //This is storing session data in our device's memory, so each time when server restarts, session data will be re-initialized and lost or reset. So in production we need a proper database like MongoDB to store session data.
-  secret: "bookMyStay",
-  resave: false,
-  saveUninitialized: true,
-  store: store // To store session data in MongoDB store instead of memory.
-}));
+// Limits each login and signup route to 10 attempts in 15 minutes.
+const authLimiter = rateLimit({
+  windowMs: FIFTEEN_MINUTES,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) =>
+    sendError(res, 429, 'Too many login or signup attempts. Try again later.'),
+});
+app.use(['/api/auth/login', '/api/auth/signup'], authLimiter);
 
+// The JSON API is the primary application interface.
+app.use('/api', apiRouter);
 
+// Serve the client when a production build has been created.
+const hasProductionClient = isProduction && fs.existsSync(CLIENT_INDEX_PATH);
+if (hasProductionClient) {
+  app.use(express.static(CLIENT_DIST_PATH));
+  app.get(/.*/, (req, res, next) => {
+    if (req.originalUrl.startsWith('/api/')) {
+      return next();
+    }
 
-app.use((req, res, next) => {
-  req.isLoggedIn = req.session.isLoggedIn;
-  next();
-})
+    return res.sendFile(CLIENT_INDEX_PATH);
+  });
+}
 
-app.use(authRouter);
-app.use(storeRouter); 
-//Middleware for checking user login status
-app.use("/admin", (req, res, next) => { //Run this middleware for every route starting with /admin
-  if(req.session.isLoggedIn) { // if user is loggedin 
-    next(); // It tells that "Middleware finished, move to next middleware/route"
+// Unmatched routes return a consistent JSON error response.
+app.use((req, res) => {
+  return res.status(404).json({ message: 'Route not found.', errors: {} });
+});
+
+// Error handler: runs when a route throws or calls next(err)
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  if (res.headersSent) {
+    return next(err);
   }
-  else{ //If User NOT Logged In then User is redirected to login page
-    res.redirect("/login");
-  }
-})
-app.use("/admin", adminRouter); // Every route inside adminRouter starts with: /admin
 
+  const status = Number.isInteger(err.status) ? err.status : 500;
+  return res.status(status).json({
+    message: status >= 500 ? 'An unexpected error occurred.' : err.message,
+    errors: err.errors || {},
+  });
+});
 
-//Adding 404 Error when URL not found
-app.use(errorsController.pageNotFound);
-
-
-//MongoDB connection and server start
-const PORT = process.env.PORT || 3007;
-
-mongoose.connect(mongoUrl)
-  .then( () => { //First we will connect to DB
-    console.log("Connected with MongoDB");
-    app.listen(PORT, ()=>{
-      console.log(`The server is running at http://localhost:${PORT}`); 
+// Connect to MongoDB first, then start the server.
+// This block is skipped when the tests import the app.
+if (require.main === module) {
+  connectDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log('Connected with MongoDB');
+        console.log(`BookMyStay is running at http://localhost:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('Database connection failed:', err);
+      process.exitCode = 1;
     });
-  })
-  .catch(error => {
-    console.log("Error while connecting to DB", error);
-  })  
+}
 
-
-
-
+module.exports = app;

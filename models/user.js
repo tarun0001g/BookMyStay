@@ -1,50 +1,45 @@
-
-
-
-const { default: mongoose } = require("mongoose");
+const { default: mongoose } = require('mongoose');
 
 const userSchema = mongoose.Schema({
-
-  firstName : {
+  firstName: {
     type: String,
-    required: [true, 'First name is required']
-  }, 
+    required: [true, 'First name is required'],
+  },
 
-  lastName : {
+  lastName: {
     type: String,
-    required: [true, 'Last name is required']
-  }, 
+    required: [true, 'Last name is required'],
+  },
 
-  email : {
+  email: {
     type: String,
     required: [true, 'Email is required'],
-    unique: true
-  }, 
+    unique: true,
+    lowercase: true,
+    trim: true,
+  },
 
-  password : {
+  password: {
     type: String,
     required: [true, 'Password is required'],
-  }, 
+  },
 
-  userType : {
+  userType: {
     type: String,
     enum: ['guest', 'admin'],
-    default: 'guest'
+    default: 'guest',
   },
 
   favourites: {
     type: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Home'
-      }
+        ref: 'Home',
+      },
     ],
-    default: []
-  }
-  
+    default: [],
+  },
 });
-
 
 //It tells create one User Model(Class) who have userSchema structure and then export it
 module.exports = mongoose.model('User', userSchema);
-
