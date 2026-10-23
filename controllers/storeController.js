@@ -39,10 +39,24 @@ exports.getHomes = [
       const filter = createHomeFilter(req.query);
       const page = parsePage(req.query.page);
       const limit = parseLimit(req.query.limit);
-      const sort = req.query.sort === 'rating' ? { rating: -1 } : { price: 1 };
+      const sort = {
+        priceDesc: { price: -1 },
+        rating: { rating: -1 },
+      }[req.query.sort] || { price: 1 };
+      if (req.query.checkIn && req.query.checkOut) {
+        const dates = parseBookingDates(req.query.checkIn, req.query.checkOut);
+        const unavailableHomes = await Booking.distinct('home', {
+          status: 'confirmed',
+          checkIn: { $lt: dates.end },
+          checkOut: { $gt: dates.start },
+        });
+        filter._id = { $nin: unavailableHomes };
+      }
       const [homes, total] = await Promise.all([
         Home.find(filter)
-          .select('houseName price location rating photo')
+          .select(
+            'houseName price location rating photo propertyType amenities guestCapacity',
+          )
           .sort(sort)
           .skip((page - 1) * limit)
           .limit(limit)
@@ -53,6 +67,7 @@ exports.getHomes = [
       return res.status(200).json({
         homes,
         page,
+        total,
         totalPages: Math.max(1, Math.ceil(total / limit)),
       });
     } catch (error) {
@@ -188,6 +203,11 @@ exports.createBooking = [
           guests: 'Enter at least one guest.',
         });
       }
+      if (guestCount > (home.guestCapacity || 16)) {
+        return sendError(res, 422, 'This home cannot accommodate that many guests.', {
+          guests: `This home allows up to ${home.guestCapacity || 16} guests.`,
+        });
+      }
 
       const booking = await createBookingSafely({
         home,
@@ -253,6 +273,26 @@ function createHomeFilter(query) {
     if (Number.isFinite(maxPrice)) {
       filter.price.$lte = maxPrice;
     }
+  }
+
+  if (query.propertyType) {
+    filter.propertyType = query.propertyType;
+  }
+  if (query.amenities) {
+    filter.amenities = { $all: query.amenities.split(',') };
+  }
+  if (query.minRating !== undefined) {
+    filter.rating = { $gte: Number(query.minRating) };
+  }
+  if (query.guests !== undefined) {
+    filter.$and = [
+      {
+        $or: [
+          { guestCapacity: { $gte: Number(query.guests) } },
+          { guestCapacity: { $exists: false } },
+        ],
+      },
+    ];
   }
 
   return filter;

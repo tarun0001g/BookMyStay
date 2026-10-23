@@ -101,6 +101,9 @@ async function createHome(owner, values = {}) {
     price: values.price || 100,
     rating: values.rating || 4,
     description: values.description || 'A comfortable place to stay.',
+    propertyType: values.propertyType || 'other',
+    amenities: values.amenities || [],
+    guestCapacity: values.guestCapacity || 2,
     photo: values.photo || 'https://res.cloudinary.com/test/image/test.jpg',
     owner: owner._id,
   });
@@ -203,11 +206,18 @@ test('admin creates, edits, and deletes only owned homes', async () => {
     .field('location', 'Bristol')
     .field('price', '120')
     .field('rating', '4.5')
+    .field('propertyType', 'farmhouse')
+    .field('guestCapacity', '6')
+    .field('amenities', 'pool')
+    .field('amenities', 'wifi')
     .field('description', 'A quiet flat near the city centre.')
     .attach('photo', Buffer.from('test image'), 'flat.jpg')
     .expect(201);
   const homeId = created.body.home._id;
   expect(created.body.home.owner).toBe(adminUser._id.toString());
+  expect(created.body.home.propertyType).toBe('farmhouse');
+  expect(created.body.home.guestCapacity).toBe(6);
+  expect(created.body.home.amenities).toEqual(expect.arrayContaining(['pool', 'wifi']));
 
   const otherHome = await createHome(guestUser, { houseName: 'Private Home' });
   const homes = await adminAgent.get('/api/admin/homes').expect(200);
@@ -270,6 +280,50 @@ test('home search and pagination return filtered page metadata', async () => {
     .expect(200);
   expect(secondPage.body.homes).toHaveLength(1);
   expect(secondPage.body.page).toBe(2);
+  expect(secondPage.body.total).toBe(13);
+});
+
+test('home search combines type, amenities, capacity, rating, and availability', async () => {
+  const poolVilla = await createHome(adminUser, {
+    houseName: 'Garden Villa',
+    propertyType: 'villa',
+    amenities: ['pool', 'wifi'],
+    guestCapacity: 4,
+    rating: 4.8,
+    price: 180,
+  });
+  await createHome(adminUser, {
+    houseName: 'Small Cottage',
+    propertyType: 'cottage',
+    amenities: ['wifi'],
+    guestCapacity: 2,
+    rating: 4.9,
+  });
+
+  const filtered = await request(server)
+    .get('/api/homes?propertyType=villa&amenities=pool,wifi&guests=3&minRating=4.5')
+    .expect(200);
+  expect(filtered.body.total).toBe(1);
+  expect(filtered.body.homes[0]._id).toBe(poolVilla._id.toString());
+
+  await Booking.create({
+    user: guestUser._id,
+    home: poolVilla._id,
+    checkIn: new Date(`${futureDate(5)}T00:00:00.000Z`),
+    checkOut: new Date(`${futureDate(7)}T00:00:00.000Z`),
+    guests: 2,
+    nights: 2,
+    totalPrice: 360,
+  });
+  const available = await request(server)
+    .get(
+      `/api/homes?propertyType=villa&checkIn=${futureDate(5)}&checkOut=${futureDate(7)}`,
+    )
+    .expect(200);
+  expect(available.body.total).toBe(0);
+  await request(server)
+    .get(`/api/homes?checkIn=${futureDate(5)}`)
+    .expect(422);
 });
 
 test('favourites can be added and removed; invalid home ids return 404', async () => {

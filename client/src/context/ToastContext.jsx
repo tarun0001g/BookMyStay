@@ -1,5 +1,14 @@
 // React
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { X } from 'lucide-react';
 
 // External libraries
 
@@ -9,16 +18,49 @@ const ToastContext = createContext(null);
 
 // Shares a small status message with actions throughout the app.
 export function ToastProvider({ children }) {
-  const [message, setMessage] = useState('');
-  const showToast = useCallback((nextMessage) => setMessage(nextMessage), []);
-  const value = useMemo(() => ({ message, showToast }), [message, showToast]);
+  const [toast, setToast] = useState(null);
+  const timeoutRef = useRef(null);
+  const dismissToast = useCallback(() => {
+    window.clearTimeout(timeoutRef.current);
+    setToast(null);
+  }, []);
+  const showToast = useCallback((message, options = {}) => {
+    window.clearTimeout(timeoutRef.current);
+    const { type = 'info', duration = 3500 } = options;
+    setToast({ message, type });
+    timeoutRef.current = window.setTimeout(() => setToast(null), duration);
+  }, []);
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(timeoutRef.current);
+    },
+    [],
+  );
+
+  const value = useMemo(() => ({ showToast }), [showToast]);
 
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="toast" role="status" aria-live="polite">
-        {message}
-      </div>
+      {toast && (
+        <div
+          className={`toast toast--${toast.type}`}
+          role={toast.type === 'error' ? 'alert' : 'status'}
+          aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
+          aria-atomic="true"
+        >
+          <span>{toast.message}</span>
+          <button
+            className="toast-dismiss"
+            type="button"
+            aria-label="Dismiss notification"
+            onClick={dismissToast}
+          >
+            <X aria-hidden="true" size={17} />
+          </button>
+        </div>
+      )}
     </ToastContext.Provider>
   );
 }

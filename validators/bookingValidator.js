@@ -5,7 +5,7 @@ const { body } = require('express-validator');
 const bookingValidator = [
   body('checkIn').isISO8601({ strict: true, strictSeparator: true }),
   body('checkOut').isISO8601({ strict: true, strictSeparator: true }),
-  body('guests').isInt({ min: 1 }),
+  body('guests').isInt({ min: 1, max: 16 }),
 ];
 
 module.exports = bookingValidator;

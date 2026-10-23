@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 // External libraries
 import { Link, useParams } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { Share2, Star } from 'lucide-react';
 
 // Local files
 import { getHome } from '../api/homesApi';
@@ -12,10 +12,12 @@ import { FavouriteButton } from '../components/FavouriteButton';
 import { formatPrice } from '../utils/formatPrice';
 import { useAuth } from '../context/AuthContext';
 import { imageUrl } from '../utils/imageUrl';
+import { useToast } from '../context/ToastContext';
 
 // Shows listing information and the booking form for one home.
 export function HomeDetailPage() {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const { homeId } = useParams();
   const [state, setState] = useState({ home: null, loading: true, error: null });
 
@@ -52,10 +54,33 @@ export function HomeDetailPage() {
   const { home } = state;
   return (
     <main className="wrap page-main detail-page">
-      <Link to="/stays">Back to stays</Link>
+      <p className="eyebrow">
+        <Link to="/stays">Stays</Link> / {home.location}
+      </p>
       <div className="detail-title">
         <h1 tabIndex="-1">{home.houseName}</h1>
-        <FavouriteButton home={home} />
+        <div className="detail-actions">
+          <button
+            className="share-button"
+            type="button"
+            onClick={async () => {
+              const shareData = { title: home.houseName, url: window.location.href };
+              try {
+                if (navigator.share) await navigator.share(shareData);
+                else {
+                  await navigator.clipboard.writeText(shareData.url);
+                  showToast('Stay link copied.', { type: 'success' });
+                }
+              } catch (error) {
+                if (error.name !== 'AbortError')
+                  showToast('Could not share this stay.', { type: 'error' });
+              }
+            }}
+          >
+            <Share2 size={17} aria-hidden="true" /> Share
+          </button>
+          <FavouriteButton home={home} />
+        </div>
       </div>
       <div className="detail-layout">
         <section className="detail-content">
@@ -75,6 +100,13 @@ export function HomeDetailPage() {
           <p className="rating">
             <Star aria-hidden="true" /> {home.rating} / 5
           </p>
+          <div className="detail-meta">
+            <span>{home.propertyType || 'Home'}</span>
+            <span>Up to {home.guestCapacity || 2} guests</span>
+            {(home.amenities || []).map((amenity) => (
+              <span key={amenity}>{amenity}</span>
+            ))}
+          </div>
           <h2>About this home</h2>
           <p>{home.description}</p>
           {user && (

@@ -121,6 +121,9 @@ function homeData(req, file) {
     price: Number(req.body.price),
     rating: Number(req.body.rating),
     description: req.body.description,
+    propertyType: req.body.propertyType || 'other',
+    amenities: normalizeAmenities(req.body.amenities),
+    guestCapacity: Number(req.body.guestCapacity || 2),
   };
 
   if (file) {
@@ -132,6 +135,12 @@ function homeData(req, file) {
   }
 
   return data;
+}
+
+// Normalizes optional amenities from multipart form fields.
+function normalizeAmenities(amenities) {
+  if (!amenities) return [];
+  return [...new Set(Array.isArray(amenities) ? amenities : [amenities])];
 }
 
 // Removes an uploaded image while keeping the API response usable on failure.

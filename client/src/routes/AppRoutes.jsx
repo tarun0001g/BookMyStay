@@ -9,6 +9,8 @@ import { RouteFocus } from '../components/RouteFocus';
 import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { StaysPage } from '../pages/StaysPage';
+import { JournalPage } from '../pages/JournalPage';
+import { JournalArticlePage } from '../pages/JournalArticlePage';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminRoute } from './AdminRoute';
 
@@ -59,6 +61,8 @@ export function AppRoutes() {
           <Route path="/" element={<HomePage />} />
           <Route path="/stays" element={<StaysPage />} />
           <Route path="/stays/:homeId" element={<HomeDetailPage />} />
+          <Route path="/journal" element={<JournalPage />} />
+          <Route path="/journal/:slug" element={<JournalArticlePage />} />
           <Route
             path="/favourites"
             element={

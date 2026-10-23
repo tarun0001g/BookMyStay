@@ -75,4 +75,26 @@ describe('authentication forms', () => {
       expect(screen.getByText('Email is invalid.')).toBeInTheDocument(),
     );
   });
+
+  it('rejects mismatched passwords before calling the signup API', async () => {
+    renderAuthPage(<SignupPage />);
+    fireEvent.change(screen.getByLabelText('First name'), { target: { value: 'Guest' } });
+    fireEvent.change(screen.getByLabelText('Last name'), { target: { value: 'Tester' } });
+    fireEvent.change(screen.getByLabelText('Email'), {
+      target: { value: 'guest@example.com' },
+    });
+    fireEvent.change(screen.getByLabelText('Password'), {
+      target: { value: 'Strong!Pass1' },
+    });
+    fireEvent.change(screen.getByLabelText('Confirm password'), {
+      target: { value: 'Different!Pass1' },
+    });
+    fireEvent.click(screen.getByLabelText('I agree to the terms.'));
+    fireEvent.click(screen.getByRole('button', { name: 'Create account' }));
+
+    expect(await screen.findByText('Passwords do not match.')).toBeInTheDocument();
+    expect(global.fetch.mock.calls.some(([path]) => path === '/api/auth/signup')).toBe(
+      false,
+    );
+  });
 });

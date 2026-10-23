@@ -40,8 +40,12 @@ export function HomeCard({ home }) {
           <strong>{formatPrice(home.price)}</strong> / night
         </p>
         <div className="card-links">
-          <Link to={`/stays/${id}`}>View details</Link>
-          <Link to={`/stays/${id}#booking`}>Book now</Link>
+          <Link className="card-view-link" to={`/stays/${id}`}>
+            View details
+          </Link>
+          <Link className="card-book-link" to={`/stays/${id}#booking`}>
+            Book now
+          </Link>
         </div>
       </div>
     </article>

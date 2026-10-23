@@ -1,5 +1,5 @@
 // React
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // External libraries
 import { Link } from 'react-router-dom';
@@ -17,9 +17,24 @@ export function BookingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [pending, setPending] = useState('');
+  const [tab, setTab] = useState('upcoming');
   const load = useCallback(
     () => getBookings().then((result) => setBookings(result.bookings)),
     [],
+  );
+  const filteredBookings = useMemo(
+    () =>
+      bookings.filter((booking) => {
+        if (tab === 'cancelled') return booking.status === 'cancelled';
+        if (tab === 'past')
+          return (
+            booking.status !== 'cancelled' && booking.checkOut.slice(0, 10) < localToday()
+          );
+        return (
+          booking.status === 'confirmed' && booking.checkOut.slice(0, 10) >= localToday()
+        );
+      }),
+    [bookings, tab],
   );
   useEffect(() => {
     load()
@@ -35,9 +50,9 @@ export function BookingsPage() {
           item._id === id ? { ...item, status: result.booking.status } : item,
         ),
       );
-      showToast('Booking cancelled.');
+      showToast('Booking cancelled.', { type: 'success' });
     } catch (err) {
-      showToast(err.message);
+      showToast(err.message, { type: 'error' });
     } finally {
       setPending('');
     }
@@ -45,6 +60,18 @@ export function BookingsPage() {
   return (
     <main className="wrap page-main">
       <h1 tabIndex="-1">Your bookings</h1>
+      <nav className="booking-tabs" aria-label="Filter bookings">
+        {['upcoming', 'past', 'cancelled'].map((item) => (
+          <button
+            key={item}
+            type="button"
+            aria-pressed={tab === item}
+            onClick={() => setTab(item)}
+          >
+            {item[0].toUpperCase() + item.slice(1)}
+          </button>
+        ))}
+      </nav>
       {loading && <p role="status">Loading bookings...</p>}
       {error && (
         <div className="notice" role="alert">
@@ -69,7 +96,10 @@ export function BookingsPage() {
         </p>
       )}
       <div className="booking-list">
-        {bookings.map((booking) => (
+        {!loading && !error && bookings.length > 0 && !filteredBookings.length && (
+          <p className="empty-state">No {tab} bookings.</p>
+        )}
+        {filteredBookings.map((booking) => (
           <article className="booking-card" key={booking._id}>
             <h2>
               {booking.home ? (
@@ -88,7 +118,7 @@ export function BookingsPage() {
             {booking.status === 'confirmed' &&
               booking.checkIn.slice(0, 10) >= localToday() && (
                 <button
-                  className="secondary-button"
+                  className="secondary-button booking-card-action"
                   disabled={pending === booking._id}
                   onClick={() => cancel(booking._id)}
                 >

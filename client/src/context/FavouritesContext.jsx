@@ -43,7 +43,7 @@ export function FavouritesProvider({ children }) {
         }
       })
       .catch((error) => {
-        if (active) showToast(error.message);
+        if (active) showToast(error.message, { type: 'error' });
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -72,9 +72,11 @@ export function FavouritesProvider({ children }) {
             current.some((item) => item._id === homeId) ? current : [...current, home],
           );
         }
-        showToast(wasSaved ? 'Removed from favourites.' : 'Added to favourites.');
+        showToast(wasSaved ? 'Removed from favourites.' : 'Added to favourites.', {
+          type: 'success',
+        });
       } catch (error) {
-        showToast(error.message);
+        showToast(error.message, { type: 'error' });
         throw error;
       } finally {
         setPending((current) => current.filter((id) => id !== homeId));

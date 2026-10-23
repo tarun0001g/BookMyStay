@@ -15,6 +15,9 @@ import { useToast } from '../context/ToastContext';
 const EMPTY = {
   houseName: '',
   location: '',
+  propertyType: 'other',
+  guestCapacity: '2',
+  amenities: [],
   price: '',
   rating: '5',
   description: '',
@@ -46,6 +49,9 @@ export function AdminHomesPage() {
     setForm({
       houseName: home.houseName,
       location: home.location,
+      propertyType: home.propertyType || 'other',
+      guestCapacity: String(home.guestCapacity || 2),
+      amenities: home.amenities || [],
       price: home.price,
       rating: home.rating,
       description: home.description || '',
@@ -79,10 +85,12 @@ export function AdminHomesPage() {
       setForm(EMPTY);
       setEditing('');
       formElement.reset();
-      showToast(editing ? 'Listing updated.' : 'Listing created.');
+      showToast(editing ? 'Listing updated.' : 'Listing created.', {
+        type: 'success',
+      });
     } catch (err) {
       setErrors(err.errors || {});
-      showToast(err.message);
+      showToast(err.message, { type: 'error' });
     } finally {
       setSaving(false);
     }
@@ -92,9 +100,9 @@ export function AdminHomesPage() {
     try {
       await deleteAdminHome(home._id);
       setHomes((items) => items.filter((item) => item._id !== home._id));
-      showToast('Listing deleted.');
+      showToast('Listing deleted.', { type: 'success' });
     } catch (err) {
-      showToast(err.message);
+      showToast(err.message, { type: 'error' });
     }
   }
   return (

@@ -1,6 +1,15 @@
 // Local files
 import { FieldError } from './FieldError';
 
+const propertyTypes = ['cottage', 'villa', 'farmhouse', 'apartment', 'other'];
+const amenities = [
+  ['wifi', 'Wi-Fi'],
+  ['pool', 'Pool'],
+  ['kitchen', 'Kitchen'],
+  ['parking', 'Parking'],
+  ['pet-friendly', 'Pet friendly'],
+];
+
 // Edits listing fields and uploads a photo for a new home.
 export function AdminHomeForm({
   editing,
@@ -38,6 +47,56 @@ export function AdminHomeForm({
         />
       </label>
       <FieldError message={errors.location} />
+      <label>
+        Property type
+        <select
+          name="propertyType"
+          value={form.propertyType}
+          onChange={(event) => setForm({ ...form, propertyType: event.target.value })}
+        >
+          {propertyTypes.map((type) => (
+            <option value={type} key={type}>
+              {type === 'other' ? 'Other' : type.charAt(0).toUpperCase() + type.slice(1)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Guest capacity
+        <input
+          name="guestCapacity"
+          type="number"
+          min="1"
+          max="16"
+          value={form.guestCapacity}
+          required
+          onChange={(event) => setForm({ ...form, guestCapacity: event.target.value })}
+        />
+      </label>
+      <FieldError message={errors.guestCapacity} />
+      <fieldset className="amenity-options">
+        <legend>Amenities</legend>
+        {amenities.map(([value, label]) => (
+          <label key={value}>
+            <input
+              name="amenities"
+              type="checkbox"
+              value={value}
+              checked={form.amenities.includes(value)}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  amenities: event.target.checked
+                    ? [...form.amenities, value]
+                    : form.amenities.filter((item) => item !== value),
+                })
+              }
+            />
+            {label}
+          </label>
+        ))}
+      </fieldset>
+      <FieldError message={errors.amenities} />
       <label>
         Price per night
         <input

@@ -9,6 +9,7 @@ export function useHomes(searchParams) {
   const query = searchParams.toString();
   const [state, setState] = useState({
     homes: [],
+    total: 0,
     totalPages: 1,
     loading: true,
     error: null,
@@ -21,6 +22,7 @@ export function useHomes(searchParams) {
         const result = await getHomes(new URLSearchParams(query), { signal });
         setState({
           homes: result.homes,
+          total: result.total ?? result.homes.length,
           totalPages: result.totalPages,
           loading: false,
           error: null,
@@ -29,7 +31,7 @@ export function useHomes(searchParams) {
         if (error.name === 'AbortError') {
           return;
         }
-        setState({ homes: [], totalPages: 1, loading: false, error });
+        setState({ homes: [], total: 0, totalPages: 1, loading: false, error });
       }
     },
     [query],
