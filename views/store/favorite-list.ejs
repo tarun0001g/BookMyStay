@@ -60,6 +60,7 @@
                 View Details
               </button>
               <form action="/favourites/delete/<%= home._id %>" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button class="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg font-semibold transition-colors">
                   Remove
                 </button>

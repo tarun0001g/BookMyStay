@@ -1,5 +1,6 @@
 
 <header class="bg-white shadow-md sticky top-0 z-50">
+  <% if (flash) { %><div class="px-6 py-3 text-center <%= flash.type === 'error' ? 'bg-red-100 text-red-800' : 'bg-rose-100 text-rose-800' %>"><%= flash.message %></div><% } %>
   <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
     
     <h1 class="text-2xl font-bold text-rose-500 tracking-wide">
@@ -58,6 +59,7 @@
       <% } else { %>
 
         <form action="/logout" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <button type="submit"
             class="bg-rose-600 text-white hover:bg-rose-700 px-6 py-2 rounded-lg font-semibold transition shadow-md hover:shadow-lg">
             Logout

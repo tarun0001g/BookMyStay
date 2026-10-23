@@ -32,7 +32,7 @@
               <% } %>
             </div>
             <span class="font-medium text-gray-800 text-sm"><%= home.rating %>/5</span>
-            <span class="text-gray-500 text-sm">(Based on reviews)</span>
+            <span class="text-gray-500 text-sm">Rating set by host</span>
           </div>
 
           <div class="grid gap-5 mb-5">
@@ -48,7 +48,7 @@
               <p class="text-3xl font-bold text-rose-500">
                 ₹<%= home.price %>
               </p>
-              <p class="text-sm text-gray-600 mt-1">Includes taxes and fees</p>
+              <p class="text-sm text-gray-600 mt-1">Price per night</p>
             </div>
           </div>
 
@@ -60,9 +60,16 @@
           </div>
 
           <div class="space-y-3 mt-5">
-            <button class="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-2xl font-semibold transition-all duration-300 shadow-md">
-              Book Now
-            </button>
+            <% if (isLoggedIn && user.userType === 'guest') { %>
+              <form id="booking-card" action="/bookings" method="POST" class="space-y-2">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="homeId" value="<%= home._id %>">
+                <label class="block text-sm">Check-in <input required type="date" name="checkIn" class="w-full border rounded p-2"></label>
+                <label class="block text-sm">Check-out <input required type="date" name="checkOut" class="w-full border rounded p-2"></label>
+                <label class="block text-sm">Guests <input required type="number" min="1" name="guests" value="1" class="w-full border rounded p-2"></label>
+                <button class="w-full bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-2xl font-semibold">Book Now</button>
+              </form>
+            <% } %>
 
             <%- include("../partials/favourite") %>
 
