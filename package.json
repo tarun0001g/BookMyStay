@@ -10,7 +10,7 @@
     "build": "npm install && vite build --config client/vite.config.js",
     "format": "prettier --write \"**/*.{js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,json,md,css}\"",
-    "test": "jest --runInBand tests",
+    "test": "jest --runInBand tests && vitest run --config client/vite.config.js",
     "lint": "eslint ."
   },
   "dependencies": {
