@@ -1,10 +1,6 @@
-// Core modules
-
 // External modules
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
-
-// Local modules
 
 const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
 

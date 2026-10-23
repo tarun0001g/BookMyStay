@@ -9,6 +9,7 @@ require('dotenv').config({ quiet: true });
 const express = require('express');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
 
 // Local modules
 const connectDB = require('./config/db');
@@ -47,41 +48,85 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'"],
+        scriptSrc: ["'self'"],
         upgradeInsecureRequests: null,
       },
     },
   }),
 );
 
-// Static files and form parsing
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Compress responses before serving static files or API responses.
+app.use(compression());
 
-// Health check used by Render
+// Parse request bodies only for API routes.
+app.use('/api', express.json(), express.urlencoded({ extended: false }));
+
+// Serve the built client without starting a session for public pages or assets.
+const hasClientBuild = fs.existsSync(CLIENT_INDEX_PATH);
+if (hasClientBuild && !isTest) {
+  app.use(
+    express.static(CLIENT_DIST_PATH, {
+      maxAge: '1y',
+      immutable: true,
+      setHeaders(res, filePath) {
+        if (filePath === CLIENT_INDEX_PATH) {
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+      },
+    }),
+  );
+  app.get(/.*/, (req, res, next) => {
+    if (req.originalUrl === '/health' || req.originalUrl.startsWith('/api/')) {
+      return next();
+    }
+
+    res.setHeader('Cache-Control', 'no-cache');
+    return res.sendFile(CLIENT_INDEX_PATH);
+  });
+} else if (!isProduction && !isTest) {
+  // npm run dev runs Vite on 5173 while Express remains the API on 3007.
+  app.get(/.*/, (req, res, next) => {
+    if (req.originalUrl === '/health' || req.originalUrl.startsWith('/api/')) {
+      return next();
+    }
+    if (req.accepts('html')) {
+      return res.redirect(302, `http://localhost:5173${req.originalUrl}`);
+    }
+    return next();
+  });
+}
+
+// Health check used by Render.
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// MongoDB stores production sessions; tests use a memory store.
+// Mount session and CSRF middleware only where the API uses a session.
+const sessionMiddleware = createSessionMiddleware({
+  isTest,
+  isProduction,
+  mongoUrl: process.env.MONGO_URL,
+  secret: process.env.SESSION_SECRET,
+});
 app.use(
-  createSessionMiddleware({
-    isTest,
-    isProduction,
-    mongoUrl: process.env.MONGO_URL,
-    secret: process.env.SESSION_SECRET,
-  }),
+  [
+    '/api/csrf',
+    '/api/auth',
+    '/api/favourites',
+    '/api/bookings',
+    '/api/admin',
+    '/api/homes/:homeId/rules',
+  ],
+  sessionMiddleware,
+  csrf,
 );
-
-// CSRF protection guards every state-changing API request.
-app.use(csrf);
 
 // Limits each login and signup route to 10 attempts in 15 minutes.
 const authLimiter = rateLimit({
   windowMs: FIFTEEN_MINUTES,
   limit: 10,
+  skip: () => isTest,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) =>
@@ -91,19 +136,6 @@ app.use(['/api/auth/login', '/api/auth/signup'], authLimiter);
 
 // The JSON API is the primary application interface.
 app.use('/api', apiRouter);
-
-// Serve the client when a production build has been created.
-const hasProductionClient = isProduction && fs.existsSync(CLIENT_INDEX_PATH);
-if (hasProductionClient) {
-  app.use(express.static(CLIENT_DIST_PATH));
-  app.get(/.*/, (req, res, next) => {
-    if (req.originalUrl.startsWith('/api/')) {
-      return next();
-    }
-
-    return res.sendFile(CLIENT_INDEX_PATH);
-  });
-}
 
 // Unmatched routes return a consistent JSON error response.
 app.use((req, res) => {
@@ -130,10 +162,7 @@ app.use((err, req, res, next) => {
 if (require.main === module) {
   connectDB()
     .then(() => {
-      app.listen(PORT, () => {
-        console.log('Connected with MongoDB');
-        console.log(`BookMyStay is running at http://localhost:${PORT}`);
-      });
+      app.listen(PORT, () => {});
     })
     .catch((err) => {
       console.error('Database connection failed:', err);

@@ -13,7 +13,9 @@ const { sendError, validationErrors } = require('../utility/apiResponse');
 // Lists the current administrator's homes through GET /api/admin/homes.
 exports.getAdminHomes = async (req, res, next) => {
   try {
-    const homes = await Home.find({ owner: req.session.user._id }).sort({ houseName: 1 });
+    const homes = await Home.find({ owner: req.session.user._id })
+      .sort({ houseName: 1 })
+      .lean();
     return res.status(200).json({ homes });
   } catch (error) {
     return next(error);

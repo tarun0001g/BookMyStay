@@ -1,4 +1,7 @@
+// External modules
 const mongoose = require('mongoose');
+
+// Local modules
 const bookingSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -17,4 +20,6 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true },
 );
 bookingSchema.index({ home: 1, checkIn: 1, checkOut: 1 });
+bookingSchema.index({ user: 1, checkIn: 1 });
+// Exports the booking model used by reservation routes.
 module.exports = mongoose.model('Booking', bookingSchema);

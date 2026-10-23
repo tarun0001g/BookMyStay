@@ -1,4 +1,5 @@
-const { default: mongoose } = require('mongoose');
+// External modules
+const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
   firstName: {
@@ -41,5 +42,5 @@ const userSchema = mongoose.Schema({
   },
 });
 
-//It tells create one User Model(Class) who have userSchema structure and then export it
+// Exports the user model used by account and favourites routes.
 module.exports = mongoose.model('User', userSchema);

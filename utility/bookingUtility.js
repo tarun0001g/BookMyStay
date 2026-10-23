@@ -1,9 +1,3 @@
-// Core modules
-
-// External modules
-
-// Local modules
-
 const MAX_NIGHTS = 30;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 

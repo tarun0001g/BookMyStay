@@ -1,3 +1,4 @@
+// External modules
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -6,4 +7,5 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Exports the configured Cloudinary client.
 module.exports = cloudinary;

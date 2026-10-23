@@ -1,9 +1,5 @@
-// Core modules
-
 // External modules
 const { body } = require('express-validator');
-
-// Local modules
 
 // Validates date and guest fields submitted to POST /api/bookings.
 const bookingValidator = [

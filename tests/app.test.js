@@ -248,10 +248,22 @@ test('home search and pagination return filtered page metadata', async () => {
 
   const firstPage = await request(server)
     .get('/api/homes?q=London&minPrice=80&maxPrice=92&page=1')
-    .expect(200);
+    .expect(200)
+    .expect((response) => {
+      expect(response.headers['set-cookie']).toBeUndefined();
+    });
   expect(firstPage.body.homes).toHaveLength(12);
   expect(firstPage.body.page).toBe(1);
   expect(firstPage.body.totalPages).toBe(2);
+  expect(firstPage.body.homes[0]).toEqual(
+    expect.objectContaining({ houseName: expect.any(String), photo: expect.any(String) }),
+  );
+  expect(firstPage.body.homes[0].owner).toBeUndefined();
+  expect(firstPage.body.homes[0].description).toBeUndefined();
+
+  const limited = await request(server).get('/api/homes?limit=4').expect(200);
+  expect(limited.body.homes).toHaveLength(4);
+  await request(server).get('/api/homes?limit=13').expect(422);
 
   const secondPage = await request(server)
     .get('/api/homes?q=London&minPrice=80&maxPrice=92&page=2')
@@ -323,6 +335,31 @@ test('booking creation calculates price, rejects overlaps, and restricts cancell
     .send({})
     .expect(200);
   expect((await Booking.findById(bookingId)).status).toBe('cancelled');
+});
+
+test('simultaneous overlapping booking requests create only one booking', async () => {
+  const home = await createHome(adminUser, { price: 100 });
+  const otherGuest = await createUser('second-guest@example.com');
+  const otherAgent = request.agent(server);
+  await Promise.all([
+    login(guestAgent, guestUser.email),
+    login(otherAgent, otherGuest.email),
+  ]);
+  const checkIn = futureDate(10);
+  const checkOut = futureDate(12);
+  const requests = await Promise.all([
+    guestAgent
+      .post('/api/bookings')
+      .set('X-CSRF-Token', await getCsrfToken(guestAgent))
+      .send({ homeId: home._id, checkIn, checkOut, guests: 1 }),
+    otherAgent
+      .post('/api/bookings')
+      .set('X-CSRF-Token', await getCsrfToken(otherAgent))
+      .send({ homeId: home._id, checkIn, checkOut, guests: 1 }),
+  ]);
+
+  expect(requests.map((response) => response.status).sort()).toEqual([201, 409]);
+  expect(await Booking.countDocuments({ home: home._id, status: 'confirmed' })).toBe(1);
 });
 
 test('invalid resource ids and unknown API routes return JSON 404 errors', async () => {

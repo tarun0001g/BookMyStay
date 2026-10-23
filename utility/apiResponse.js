@@ -1,9 +1,3 @@
-// Core modules
-
-// External modules
-
-// Local modules
-
 // Sends the API's shared error response shape.
 function sendError(res, status, message, errors = {}) {
   return res.status(status).json({ message, errors });

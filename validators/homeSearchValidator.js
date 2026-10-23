@@ -1,9 +1,5 @@
-// Core modules
-
 // External modules
 const { query } = require('express-validator');
-
-// Local modules
 
 // Validates filters accepted by GET /api/homes.
 const homeSearchValidator = [
@@ -21,6 +17,7 @@ const homeSearchValidator = [
     }),
   query('sort').optional().isIn(['price', 'rating']),
   query('page').optional().isInt({ min: 1 }),
+  query('limit').optional().isInt({ min: 1, max: 12 }),
 ];
 
 module.exports = homeSearchValidator;

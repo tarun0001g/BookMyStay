@@ -17,7 +17,8 @@ const {
 } = require('../utility/bookingUtility');
 const bookingValidator = require('../validators/bookingValidator');
 const homeSearchValidator = require('../validators/homeSearchValidator');
-const PAGE_SIZE = 12;
+const MAX_PAGE_SIZE = 12;
+const DEFAULT_PAGE_SIZE = 12;
 const RULES_PATH = path.join(__dirname, '../rules/BookMyStay_Rules.pdf');
 
 // Lists homes matching search filters through GET /api/homes.
@@ -37,19 +38,22 @@ exports.getHomes = [
     try {
       const filter = createHomeFilter(req.query);
       const page = parsePage(req.query.page);
+      const limit = parseLimit(req.query.limit);
       const sort = req.query.sort === 'rating' ? { rating: -1 } : { price: 1 };
       const [homes, total] = await Promise.all([
         Home.find(filter)
+          .select('houseName price location rating photo')
           .sort(sort)
-          .skip((page - 1) * PAGE_SIZE)
-          .limit(PAGE_SIZE),
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .lean(),
         Home.countDocuments(filter),
       ]);
 
       return res.status(200).json({
         homes,
         page,
-        totalPages: Math.max(1, Math.ceil(total / PAGE_SIZE)),
+        totalPages: Math.max(1, Math.ceil(total / limit)),
       });
     } catch (error) {
       return next(error);
@@ -64,7 +68,7 @@ exports.getHome = async (req, res, next) => {
       return sendError(res, 404, 'Home not found.');
     }
 
-    const home = await Home.findById(req.params.homeId);
+    const home = await Home.findById(req.params.homeId).lean();
     if (!home) {
       return sendError(res, 404, 'Home not found.');
     }
@@ -82,7 +86,7 @@ exports.getHouseRules = async (req, res, next) => {
       return sendError(res, 404, 'Home not found.');
     }
 
-    const home = await Home.findById(req.params.homeId);
+    const home = await Home.findById(req.params.homeId).select('houseName').lean();
     if (!home) {
       return sendError(res, 404, 'Home not found.');
     }
@@ -97,7 +101,7 @@ exports.getHouseRules = async (req, res, next) => {
 // Lists the signed-in user's favourites through GET /api/favourites.
 exports.getFavourites = async (req, res, next) => {
   try {
-    const user = await User.findById(req.session.user._id).populate('favourites');
+    const user = await User.findById(req.session.user._id).populate('favourites').lean();
     return res.status(200).json({ homes: user?.favourites || [] });
   } catch (error) {
     return next(error);
@@ -147,7 +151,8 @@ exports.getBookings = async (req, res, next) => {
   try {
     const bookings = await Booking.find({ user: req.session.user._id })
       .populate('home')
-      .sort({ checkIn: 1 });
+      .sort({ checkIn: 1 })
+      .lean();
     return res.status(200).json({ bookings });
   } catch (error) {
     return next(error);
@@ -164,12 +169,7 @@ exports.createBooking = [
         res,
         422,
         'Please enter valid booking details.',
-        validationResultData.array().reduce((errors, error) => {
-          if (!errors[error.path]) {
-            errors[error.path] = 'Enter valid booking details.';
-          }
-          return errors;
-        }, {}),
+        validationErrors(validationResultData),
       );
     }
 
@@ -189,25 +189,15 @@ exports.createBooking = [
         });
       }
 
-      const overlap = await Booking.exists({
-        home: home._id,
-        status: 'confirmed',
-        checkIn: { $lt: dates.end },
-        checkOut: { $gt: dates.start },
+      const booking = await createBookingSafely({
+        home,
+        userId: req.session.user._id,
+        dates,
+        guestCount,
       });
-      if (overlap) {
+      if (!booking) {
         return sendError(res, 409, 'Those dates are already booked.');
       }
-
-      const booking = await Booking.create({
-        user: req.session.user._id,
-        home: home._id,
-        checkIn: dates.start,
-        checkOut: dates.end,
-        guests: guestCount,
-        nights: dates.nights,
-        totalPrice: dates.nights * home.price,
-      });
 
       return res.status(201).json({ booking });
     } catch (error) {
@@ -274,11 +264,66 @@ function parsePage(value) {
   return Number.isInteger(page) && page > 0 ? page : 1;
 }
 
+// Parses an optional page size capped at the maximum supported limit.
+function parseLimit(value) {
+  if (value === undefined) {
+    return DEFAULT_PAGE_SIZE;
+  }
+  return Math.min(Number.parseInt(value, 10), MAX_PAGE_SIZE);
+}
+
+// Serializes same-home booking checks with an atomic MongoDB lock.
+async function createBookingSafely({ home, userId, dates, guestCount }) {
+  const lockId = new mongoose.Types.ObjectId().toString();
+  const lockExpiresAt = new Date(Date.now() + 30000);
+  const lockedHome = await Home.findOneAndUpdate(
+    {
+      _id: home._id,
+      $or: [
+        { bookingLockExpiresAt: { $exists: false } },
+        { bookingLockExpiresAt: { $lt: new Date() } },
+      ],
+    },
+    { $set: { bookingLockId: lockId, bookingLockExpiresAt: lockExpiresAt } },
+    { returnDocument: 'after' },
+  );
+  if (!lockedHome) {
+    return null;
+  }
+
+  try {
+    const overlap = await Booking.exists({
+      home: home._id,
+      status: 'confirmed',
+      checkIn: { $lt: dates.end },
+      checkOut: { $gt: dates.start },
+    });
+    if (overlap) {
+      return null;
+    }
+
+    return await Booking.create({
+      user: userId,
+      home: home._id,
+      checkIn: dates.start,
+      checkOut: dates.end,
+      guests: guestCount,
+      nights: dates.nights,
+      totalPrice: dates.nights * home.price,
+    });
+  } finally {
+    await Home.updateOne(
+      { _id: home._id, bookingLockId: lockId },
+      { $unset: { bookingLockId: 1, bookingLockExpiresAt: 1 } },
+    );
+  }
+}
+
 // Finds a home only when its supplied identifier is valid.
 function findHome(homeId) {
   if (!mongoose.isValidObjectId(homeId)) {
     return null;
   }
 
-  return Home.findById(homeId);
+  return Home.findById(homeId).lean();
 }

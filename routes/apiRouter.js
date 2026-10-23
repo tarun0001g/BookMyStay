@@ -32,7 +32,7 @@ function uploadPhoto(req, res, next) {
 // Provides the CSRF token before the client makes a state-changing request.
 router.get('/csrf', authController.getCsrfToken);
 
-// Account endpoints share the session cookie used by the legacy pages.
+// Account endpoints use the API session cookie.
 router.get('/auth/me', authController.getCurrentUser);
 router.post('/auth/signup', authController.signup);
 router.post('/auth/login', authController.login);

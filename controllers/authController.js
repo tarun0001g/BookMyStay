@@ -14,6 +14,9 @@ const SESSION_SAVE_ERROR = 'Could not save the session.';
 
 // Sends the CSRF token used by the single-page client for mutations.
 exports.getCsrfToken = (req, res) => {
+  if (!req.session.csrfToken) {
+    req.session.csrfToken = crypto.randomBytes(24).toString('hex');
+  }
   return res.status(200).json({ csrfToken: req.session.csrfToken });
 };
 
