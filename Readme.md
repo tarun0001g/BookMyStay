@@ -2,6 +2,8 @@
 
 BookMyStay is a React single page app backed by an Express 5 JSON API and MongoDB. Cloudinary stores listing images. Guests can browse homes, save favourites, and book stays; administrators manage their own listings.
 
+
+
 ## Screenshots
 
 Screenshots are in `screenshots/`. Please replace them with current captures when convenient.
