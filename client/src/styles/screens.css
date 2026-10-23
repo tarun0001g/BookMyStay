@@ -78,3 +78,62 @@
   background: var(--surface);
   color: var(--ink);
 }
+.detail-title,
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
+  gap: 28px;
+  margin-top: 22px;
+}
+.detail-photo {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  background: var(--placeholder);
+}
+.detail-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.detail-price {
+  font-size: 1.1rem;
+}
+.booking-form,
+.listing-form,
+.booking-card {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.booking-form label,
+.listing-form label {
+  display: grid;
+  gap: 6px;
+}
+.booking-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+.booking-card h2,
+.booking-card h3,
+.booking-card p {
+  margin: 0;
+}
+.listing-form {
+  max-width: 620px;
+  margin: 24px 0 40px;
+}
+.danger-button {
+  color: var(--error);
+}

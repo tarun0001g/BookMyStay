@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 // External libraries
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 // Local files
 import { FieldError } from '../components/FieldError';
@@ -14,6 +14,7 @@ export function SignupPage() {
   const { signup } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const [params] = useSearchParams();
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
@@ -25,9 +26,8 @@ export function SignupPage() {
     try {
       await signup(Object.fromEntries(new FormData(event.currentTarget)));
       showToast('Your account is ready. Log in to continue.');
-      navigate(
-        `/login${params.get('returnTo') ? `?returnTo=${encodeURIComponent(params.get('returnTo'))}` : ''}`,
-      );
+      const returnTo = location.state?.from || params.get('returnTo');
+      navigate(returnTo ? `/login?returnTo=${encodeURIComponent(returnTo)}` : '/login');
     } catch (error) {
       setErrors(error.errors || {});
       showToast(error.message);

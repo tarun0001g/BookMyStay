@@ -1,12 +1,19 @@
-@import '@fontsource-variable/bricolage-grotesque';
-@import '@fontsource/public-sans/400.css';
-@import '@fontsource/public-sans/500.css';
-@import '@fontsource/public-sans/600.css';
-@import 'tailwindcss';
+@import '@fontsource/public-sans/latin-400.css';
+@import '@fontsource/public-sans/latin-500.css';
+@import '@fontsource/public-sans/latin-600.css';
 @import './home.css';
 @import './cards.css';
 @import './screens.css';
 @import './responsive.css';
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
 
 :root {
   font-family: 'Public Sans', sans-serif;
@@ -28,6 +35,10 @@
 
 * {
   box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 body {
   min-width: 360px;
@@ -138,4 +149,22 @@ h2 {
 }
 p {
   line-height: 1.6;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+input,
+select,
+textarea {
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+}
+textarea {
+  min-height: 120px;
+  resize: vertical;
 }

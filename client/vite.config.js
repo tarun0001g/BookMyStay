@@ -3,7 +3,6 @@ const path = require('node:path');
 
 // External modules
 const react = require('@vitejs/plugin-react');
-const tailwind = require('@tailwindcss/vite').default;
 const { defineConfig } = require('vite');
 
 // Local modules
@@ -11,7 +10,7 @@ const { defineConfig } = require('vite');
 // Configures the client dev server and isolated browser tests.
 module.exports = defineConfig({
   root: __dirname,
-  plugins: [react(), tailwind()],
+  plugins: [react()],
   server: {
     proxy: { '/api': 'http://localhost:3007' },
   },

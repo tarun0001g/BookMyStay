@@ -8,7 +8,7 @@ const jsxA11y = require('eslint-plugin-jsx-a11y');
 
 // Local modules
 module.exports = [
-  { ignores: ['node_modules/**', 'public/output.css', 'client/dist/**'] },
+  { ignores: ['node_modules/**', 'client/dist/**'] },
   {
     files: ['**/*.js'],
     languageOptions: {

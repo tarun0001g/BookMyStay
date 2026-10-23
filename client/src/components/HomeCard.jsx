@@ -1,55 +1,34 @@
 // React
 
 // External libraries
-import { Heart, Star } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Local files
-import { useFavourites } from '../hooks/useFavourites';
-import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
+import { FavouriteButton } from './FavouriteButton';
+import { imageUrl } from '../utils/imageUrl';
 
 // Displays one listing and its accessible favourite action.
 export function HomeCard({ home }) {
-  const { ids, pending, toggle } = useFavourites();
-  const { user } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
   const id = home._id;
-  const saved = ids.includes(id);
-
-  async function handleFavourite() {
-    if (!user) {
-      navigate('/login', {
-        state: { from: `${location.pathname}${location.search}` },
-      });
-      return;
-    }
-    try {
-      await toggle(id);
-    } catch {
-      // The hook displays the request error through the toast.
-    }
-  }
 
   return (
     <article className="home-card">
       <div className="home-photo">
-        {home.photo ? <img src={home.photo} alt={home.houseName} /> : null}
-        <button
-          className="favourite-button"
-          type="button"
-          aria-label={
-            saved
-              ? `Remove ${home.houseName} from favourites`
-              : `Add ${home.houseName} to favourites`
-          }
-          aria-pressed={saved}
-          disabled={pending.includes(id)}
-          onClick={handleFavourite}
-        >
-          <Heart aria-hidden="true" fill={saved ? 'currentColor' : 'none'} />
-        </button>
+        {home.photo ? (
+          <img
+            src={imageUrl(home.photo, 600)}
+            srcSet={`${imageUrl(home.photo, 400)} 400w, ${imageUrl(home.photo, 600)} 600w, ${imageUrl(home.photo, 900)} 900w`}
+            sizes="(max-width: 560px) calc(100vw - 40px), (max-width: 900px) 45vw, 260px"
+            width="600"
+            height="450"
+            alt={home.houseName}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : null}
+        <FavouriteButton home={home} />
       </div>
       <div className="home-card-content">
         <div className="home-card-title">

@@ -32,8 +32,15 @@ export function StaysPage() {
   return (
     <main className="wrap page-main">
       <h1 tabIndex="-1">Find your stay</h1>
-      <SearchBar initial={query} onSubmit={update} compact busy={loading} />
+      <SearchBar
+        key={params.toString()}
+        initial={query}
+        onSubmit={update}
+        compact
+        busy={loading}
+      />
       <form
+        key={params.toString()}
         className="filters"
         onSubmit={(event) => {
           event.preventDefault();

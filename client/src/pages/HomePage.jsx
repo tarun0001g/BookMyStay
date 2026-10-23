@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 
 // External libraries
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 // Local files
 import { getHomes } from '../api/homesApi';
@@ -14,14 +14,19 @@ export function HomePage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [state, setState] = useState({ homes: [], loading: true, error: null });
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    getHomes(new URLSearchParams())
-      .then((result) =>
-        setState({ homes: result.homes.slice(0, 4), loading: false, error: null }),
-      )
-      .catch((error) => setState({ homes: [], loading: false, error }));
-  }, []);
+    const controller = new AbortController();
+    getHomes(new URLSearchParams('limit=4'), { signal: controller.signal })
+      .then((result) => setState({ homes: result.homes, loading: false, error: null }))
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          setState({ homes: [], loading: false, error });
+        }
+      });
+    return () => controller.abort();
+  }, [reloadKey]);
 
   function search(values) {
     const query = new URLSearchParams(values);
@@ -38,9 +43,9 @@ export function HomePage() {
       <section className="featured-section" aria-labelledby="featured-heading">
         <div className="section-heading">
           <h2 id="featured-heading">A few places to start</h2>
-          <a href="/stays">Browse all stays</a>
+          <Link to="/stays">Browse all stays</Link>
         </div>
-        <HomeGrid {...state} onRetry={() => window.location.reload()} />
+        <HomeGrid {...state} onRetry={() => setReloadKey((key) => key + 1)} />
       </section>
     </main>
   );

@@ -22,20 +22,41 @@ export function FavouritesProvider({ children }) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [ids, setIds] = useState([]);
+  const [homes, setHomes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [pending, setPending] = useState([]);
 
   useEffect(() => {
+    let active = true;
     if (!user) {
       setIds([]);
-      return;
+      setHomes([]);
+      setLoading(false);
+      return () => {
+        active = false;
+      };
     }
+    setLoading(true);
     getFavourites()
-      .then((result) => setIds(result.homes.map((home) => home._id)))
-      .catch((error) => showToast(error.message));
+      .then((result) => {
+        if (active) {
+          setHomes(result.homes);
+          setIds(result.homes.map((home) => home._id));
+        }
+      })
+      .catch((error) => {
+        if (active) showToast(error.message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [user, showToast]);
 
   const toggle = useCallback(
-    async (homeId) => {
+    async (homeId, home) => {
       if (pending.includes(homeId)) {
         return;
       }
@@ -46,6 +67,13 @@ export function FavouritesProvider({ children }) {
         setIds((current) =>
           wasSaved ? current.filter((id) => id !== homeId) : [...current, homeId],
         );
+        if (wasSaved) {
+          setHomes((current) => current.filter((home) => home._id !== homeId));
+        } else if (home) {
+          setHomes((current) =>
+            current.some((item) => item._id === homeId) ? current : [...current, home],
+          );
+        }
         showToast(wasSaved ? 'Removed from favourites.' : 'Added to favourites.');
       } catch (error) {
         showToast(error.message);
@@ -57,7 +85,10 @@ export function FavouritesProvider({ children }) {
     [ids, pending, showToast],
   );
 
-  const value = useMemo(() => ({ ids, pending, toggle }), [ids, pending, toggle]);
+  const value = useMemo(
+    () => ({ ids, homes, pending, loading, toggle }),
+    [ids, homes, pending, loading, toggle],
+  );
   return (
     <FavouritesContext.Provider value={value}>{children}</FavouritesContext.Provider>
   );
