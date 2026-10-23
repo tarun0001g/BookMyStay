@@ -1,0 +1,182 @@
+@media (max-width: 900px) {
+  .home-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .search-panel,
+  .search-panel-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 767px) {
+  .header-inner {
+    position: relative;
+  }
+  .menu-toggle {
+    display: inline-grid;
+    place-items: center;
+  }
+  .navigation {
+    display: none;
+    position: absolute;
+    top: calc(100% - 1px);
+    right: 0;
+    left: 0;
+    z-index: 3;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 8px 20px 16px;
+    border: 1px solid var(--border);
+    border-radius: 0 0 10px 10px;
+    background: var(--surface);
+  }
+  .navigation-open {
+    display: flex;
+  }
+  .navigation a,
+  .text-button {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 520px) {
+  .wrap {
+    width: min(100% - 32px, 1240px);
+  }
+  .page-main {
+    padding-block: 32px 48px;
+  }
+  .search-panel,
+  .search-panel-compact {
+    grid-template-columns: 1fr 1fr;
+  }
+  .search-panel label:first-child {
+    grid-column: 1 / -1;
+  }
+  .search-panel .primary-button {
+    grid-column: 1 / -1;
+  }
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+@media (max-width: 720px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-section {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding-top: 40px;
+  }
+  .destination-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .footer-inner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 767px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+  }
+  .hero-feature {
+    max-height: 420px;
+  }
+  .benefit-grid {
+    grid-template-columns: 1fr;
+  }
+  .journal-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .journal-featured {
+    grid-template-columns: 1fr;
+  }
+  .journal-featured-art {
+    min-height: 170px;
+  }
+  .hosting-promo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 520px) {
+  .hero-section {
+    padding-top: 28px;
+  }
+  .hero-copy h1 {
+    font-size: clamp(2.1rem, 9vw, 2.45rem);
+  }
+  .hero-feature {
+    aspect-ratio: 1.05;
+  }
+  .home-search {
+    margin-bottom: 32px;
+  }
+  .destination-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .journal-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 14px;
+  }
+  .footer-brand-column {
+    grid-column: 1/-1;
+  }
+  .account-menu-panel {
+    right: -40px;
+  }
+  .results-heading {
+    align-items: flex-start;
+  }
+  .stay-filter-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+  .search-panel-compact {
+    padding: 14px;
+  }
+  .auth-main {
+    width: min(100% - 28px, 900px);
+    padding-block: 24px 36px;
+  }
+  .auth-card {
+    padding: 22px;
+    border-radius: 12px;
+  }
+  .auth-heading {
+    margin-bottom: 20px;
+  }
+  .auth-heading h1 {
+    font-size: 2.1rem;
+  }
+  .auth-heading p {
+    font-size: 1.02rem;
+  }
+  .auth-name-row {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+  .auth-switch {
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+  .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

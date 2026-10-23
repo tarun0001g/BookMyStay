@@ -1,170 +1,153 @@
-const registeredHomes = [];
-const Home = require("../models/home.js");
-const fs = require("fs");
+// External modules
+const mongoose = require('mongoose');
+const { validationResult } = require('express-validator');
 
-exports.getAddHome =  (req, res, next) => { //we also need to pass editing flag here
-    res.render('admin/edit-home', {
-      pageTitle: "Enter Home Details", 
-      pageName: "Add Home", 
-      editing: false, 
-      isLoggedIn: req.session.isLoggedIn,
-      user: req.session.user,
-    }); 
-} 
+// Local modules
+const cloudinary = require('../config/cloudinary');
+const Home = require('../models/home');
+const homeValidator = require('../validators/homeValidator');
+const { sendError, validationErrors } = require('../utility/apiResponse');
 
-exports.getAdminHomes = (req, res, next) => {
-  Home.find().then( registeredHomes => {
-    res.render('admin/admin-home-list', {
-      registeredHomes: registeredHomes, 
-      pageTitle: "Admin's Homes!", 
-      pageName: "admin-homes", 
-      isLoggedIn: req.session.isLoggedIn , 
-      user: req.session.user,
-    })
-  });
-}
-
-//Edit home details
-exports.getEditHome = (req, res, next) => {
-  const homeId = req.params.homeId;
-  const editing = req.query.editing === 'true'; //Query parameter/variable
-
-  Home.findById(homeId).then( home => { //home details fetching
-    if(!home){
-      console.log("Home not found for editing!");
-      res.redirect("/admin/admin-home-list");
-    }
-       //passed home details
-      console.log(homeId, editing, home);
-      res.render('admin/edit-home', { 
-        pageTitle: "Edit Your Home", 
-        pageName: "admin-homes", 
-        editing: editing, 
-        home: home, 
-        isLoggedIn: req.session.isLoggedIn, 
-        user: req.session.user,
-      });
-  });
-}
-
-
-// exports.postAddHome =  (req, res, next) => {
- 
-//   const { houseName, price, location, rating, description} = req.body;
-//   console.log(houseName, price, location, rating, description);
-//   console.log(req.file);
-
-//   // if(!req.file){
-//   //   return res.status(422).send("Please upload a valid image file!");
-//   // }
-
-//   if (!req.file) {
-//     return res.status(422).send("Please upload an image!");
-//   }
-
-
-//   const photo = req.file.path; // it will be the path of uploaded file on our server.(in uploads\image.. )
-
-//   const home = new Home ( { //saving home with below details on MongoDB
-//     houseName, 
-//     price, 
-//     location, 
-//     rating, 
-//     photo, 
-//     description
-//    } );
-
-//   home.save().then(() => {
-//     console.log("Home Saved Successfully!");
-//   });  
-//   res.redirect('/admin/admin-home-list');
-// }
-
-exports.postAddHome = async (req, res, next) => {
+// Lists the current administrator's homes through GET /api/admin/homes.
+exports.getAdminHomes = async (req, res, next) => {
   try {
-
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
-    const { houseName, price, location, rating, description } = req.body;
-
-    if (!req.file) {
-      return res.status(422).send("Please upload an image!");
-    }
-
-    const photo = req.file.path;
-
-    const home = new Home({
-      houseName,
-      price,
-      location,
-      rating,
-      photo,
-      description
-    });
-
-    await home.save();
-
-    res.redirect('/admin/admin-home-list');
-
-  } catch (err) {
-    console.log("ERROR OCCURRED:");
-    console.log(err);
-    res.status(500).send(err.message);
+    const homes = await Home.find({ owner: req.session.user._id })
+      .sort({ houseName: 1 })
+      .lean();
+    return res.status(200).json({ homes });
+  } catch (error) {
+    return next(error);
   }
 };
 
-
-//After Editing Home
-exports.postEditHome =  (req, res, next) => {
-  const { id, houseName, price, location, rating, description} = req.body;
-
-  Home.findById(id).then((home) => {
-    home.houseName = houseName;
-    home.location = location;
-    home.rating = rating;
-    home.description = description;
-
-    if (req.file) {
-      home.photo = req.file.path;
+// Validates and creates an owned home through POST /api/admin/homes.
+exports.createHome = [
+  ...homeValidator,
+  async (req, res, next) => {
+    const validationResultData = validationResult(req);
+    if (!validationResultData.isEmpty()) {
+      return sendError(
+        res,
+        422,
+        'Please correct the highlighted fields.',
+        validationErrors(validationResultData),
+      );
+    }
+    if (!req.file) {
+      return sendError(res, 422, 'A JPG or PNG photo is required.', {
+        photo: 'A JPG or PNG photo is required.',
+      });
     }
 
-    // if(req.file){
-    //   fs.unlink(home.photo, (err) => {
-    //     if(err){
-    //       console.log("Error while deleting old home home's photo!!", err);
-    //     }//unlink() it will delete file from server. It takes path of file to be deleted and callback function as arguments.
-    //   });
-    //   home.photo = req.file.path; //if new photo is uploaded by home admin then & only then update with current photo path
-    // }
-
-    home.save().then(result => {
-      console.log("Home Updated", result);
-    }).catch(err => {
-      console.log("Error while updating home", err);
-    })
-    res.redirect('/admin/admin-home-list');
-
-  }).catch(err => {
-    console.log("Error while finding home", err);
-  });
-} 
-
-
-//Delete Home
-exports.postDeleteHome =  (req, res, next) => {
-  const homeId = req.params.homeId;
-
-  Home.findByIdAndDelete(homeId).then(() => {
-    res.redirect('/admin/admin-home-list'); 
-    console.log("Home deleted successfully!", homeId);
-  })
-  .catch(error => {
-    if(error){
-      console.log("Error while deleting home!", error);
+    try {
+      const home = await Home.create(homeData(req, req.file));
+      return res.status(201).json({ home });
+    } catch (error) {
+      return next(error);
     }
-  });
+  },
+];
+
+// Validates and updates an owned home through PUT /api/admin/homes/:homeId.
+exports.updateHome = [
+  ...homeValidator,
+  async (req, res, next) => {
+    const validationResultData = validationResult(req);
+    if (!validationResultData.isEmpty()) {
+      return sendError(
+        res,
+        422,
+        'Please correct the highlighted fields.',
+        validationErrors(validationResultData),
+      );
+    }
+
+    try {
+      if (!mongoose.isValidObjectId(req.params.homeId)) {
+        return sendError(res, 404, 'Home not found.');
+      }
+
+      const home = await Home.findOne({
+        _id: req.params.homeId,
+        owner: req.session.user._id,
+      });
+      if (!home) {
+        return sendError(res, 404, 'Home not found.');
+      }
+
+      const previousPhotoId = home.photoPublicId;
+      Object.assign(home, homeData(req, req.file));
+      await home.save();
+      if (req.file && previousPhotoId) {
+        await destroyPhoto(previousPhotoId);
+      }
+
+      return res.status(200).json({ home });
+    } catch (error) {
+      return next(error);
+    }
+  },
+];
+
+// Deletes only an owned home through DELETE /api/admin/homes/:homeId.
+exports.deleteHome = async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.homeId)) {
+      return sendError(res, 404, 'Home not found.');
+    }
+
+    const home = await Home.findOneAndDelete({
+      _id: req.params.homeId,
+      owner: req.session.user._id,
+    });
+    if (!home) {
+      return sendError(res, 404, 'Home not found.');
+    }
+    if (home.photoPublicId) {
+      await destroyPhoto(home.photoPublicId);
+    }
+
+    return res.status(200).json({ message: 'Home deleted.' });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// Creates the schema fields shared by home creation and updates.
+function homeData(req, file) {
+  const data = {
+    houseName: req.body.houseName,
+    location: req.body.location,
+    price: Number(req.body.price),
+    rating: Number(req.body.rating),
+    description: req.body.description,
+    propertyType: req.body.propertyType || 'other',
+    amenities: normalizeAmenities(req.body.amenities),
+    guestCapacity: Number(req.body.guestCapacity || 2),
+  };
+
+  if (file) {
+    data.photo = file.path;
+    data.photoPublicId = file.filename || file.public_id;
+  }
+  if (!req.params.homeId) {
+    data.owner = req.session.user._id;
+  }
+
+  return data;
 }
 
+// Normalizes optional amenities from multipart form fields.
+function normalizeAmenities(amenities) {
+  if (!amenities) return [];
+  return [...new Set(Array.isArray(amenities) ? amenities : [amenities])];
+}
 
-
+// Removes an uploaded image while keeping the API response usable on failure.
+async function destroyPhoto(publicId) {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error('Could not delete a Cloudinary image:', error.message);
+  }
+}

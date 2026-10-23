@@ -1,0 +1,113 @@
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.home-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.home-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--placeholder);
+}
+.home-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.favourite-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--coastal-primary);
+  cursor: pointer;
+}
+.home-card-content {
+  padding: 15px 16px 14px;
+}
+.home-card-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.home-card-title h2 {
+  display: -webkit-box;
+  min-width: 0;
+  min-height: 2.6em;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+.rating {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.rating svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--coastal-coral);
+  color: var(--coastal-coral);
+}
+.muted,
+.price-line {
+  color: var(--muted);
+}
+.muted {
+  margin: 7px 0 14px;
+}
+.home-card .muted {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.price-line {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+}
+.price-line strong {
+  color: var(--ink);
+  font-size: 1.1rem;
+}
+.card-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.card-links a {
+  min-height: 44px;
+  padding: 8px 10px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  text-decoration: none;
+}
+.card-view-link {
+  color: var(--coastal-primary);
+}
+.card-book-link {
+  border-radius: 7px;
+  background: var(--coastal-primary);
+  color: var(--coastal-white) !important;
+}
+.card-book-link:hover {
+  background: var(--coastal-secondary);
+}

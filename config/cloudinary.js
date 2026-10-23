@@ -1,5 +1,5 @@
-
-const cloudinary = require("cloudinary").v2;
+// External modules
+const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,4 +7,5 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Exports the configured Cloudinary client.
 module.exports = cloudinary;
