@@ -1,7 +1,3 @@
-// React
-
-// External libraries
-
 // Local files
 import { apiRequest } from './apiClient';
 

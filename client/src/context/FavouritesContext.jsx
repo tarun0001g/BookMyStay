@@ -8,8 +8,6 @@ import {
   useState,
 } from 'react';
 
-// External libraries
-
 // Local files
 import { addFavourite, getFavourites, removeFavourite } from '../api/favouritesApi';
 import { useAuth } from './AuthContext';

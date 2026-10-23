@@ -1,8 +1,6 @@
-// React
-import { useFavourites } from '../context/FavouritesContext';
-
 // Local files
 import { HomeGrid } from '../components/HomeGrid';
+import { useFavourites } from '../context/FavouritesContext';
 
 // Displays the signed-in user's saved homes.
 export function FavouritesPage() {

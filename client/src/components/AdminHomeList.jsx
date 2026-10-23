@@ -1,5 +1,3 @@
-// React
-
 // External libraries
 import { Link } from 'react-router-dom';
 

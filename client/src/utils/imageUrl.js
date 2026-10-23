@@ -1,9 +1,3 @@
-// React
-
-// External libraries
-
-// Local files
-
 // Adds responsive delivery settings to Cloudinary image URLs.
 export function imageUrl(url, width) {
   if (!url || !url.includes('res.cloudinary.com') || !url.includes('/upload/')) {

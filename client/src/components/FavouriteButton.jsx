@@ -1,5 +1,3 @@
-// React
-
 // External libraries
 import { Heart } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';

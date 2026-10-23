@@ -1,8 +1,6 @@
 // React
 import { useCallback, useEffect, useState } from 'react';
 
-// External libraries
-
 // Local files
 import { getHomes } from '../api/homesApi';
 

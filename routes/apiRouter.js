@@ -1,5 +1,3 @@
-// Core modules
-
 // External modules
 const express = require('express');
 

@@ -5,8 +5,6 @@ const path = require('node:path');
 const react = require('@vitejs/plugin-react');
 const { defineConfig } = require('vite');
 
-// Local modules
-
 // Configures the client dev server and isolated browser tests.
 module.exports = defineConfig({
   root: __dirname,
