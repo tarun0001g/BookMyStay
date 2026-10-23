@@ -1,0 +1,4 @@
+node_modules/
+client/dist/
+public/output.css
+public/style.css

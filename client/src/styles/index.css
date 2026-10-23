@@ -1,0 +1,141 @@
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource/public-sans/400.css';
+@import '@fontsource/public-sans/500.css';
+@import '@fontsource/public-sans/600.css';
+@import 'tailwindcss';
+@import './home.css';
+@import './cards.css';
+@import './screens.css';
+@import './responsive.css';
+
+:root {
+  font-family: 'Public Sans', sans-serif;
+  color: #14262b;
+  background: var(--page);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #14262b;
+  --forest: #1f5c4d;
+  --marigold: #f2a900;
+  --page: #fafaf7;
+  --surface: #fff;
+  --border: #e2e4dc;
+  --muted: #4f6166;
+  --placeholder: #eeefe9;
+  --error: #8a2525;
+  --marigold-hover: #e19d00;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  min-width: 360px;
+  min-height: 100vh;
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+a {
+  color: var(--forest);
+  text-underline-offset: 3px;
+}
+a,
+button {
+  transition:
+    color 150ms,
+    background-color 150ms,
+    border-color 150ms;
+}
+a:hover,
+.text-button:hover {
+  color: var(--ink);
+}
+:focus-visible {
+  outline: 3px solid var(--forest);
+  outline-offset: 3px;
+}
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+.wrap {
+  width: min(1100px, calc(100% - 40px));
+  margin-inline: auto;
+}
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.header-inner {
+  display: flex;
+  min-height: 76px;
+  align-items: center;
+  justify-content: space-between;
+}
+.wordmark {
+  color: var(--forest);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+.navigation a,
+.text-button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.navigation a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.navigation a.active {
+  color: var(--forest);
+  font-weight: 600;
+}
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--forest);
+  cursor: pointer;
+}
+.menu-toggle {
+  display: none;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.page-main {
+  flex: 1;
+  padding-block: 48px 72px;
+}
+h1,
+h2,
+h3 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  line-height: 1.15;
+}
+h1 {
+  margin: 0 0 18px;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+p {
+  line-height: 1.6;
+}
