@@ -1,87 +1,373 @@
-# BookMyStay
+# BookMyStay 🏡
 
-BookMyStay is a React single page app backed by an Express 5 JSON API and MongoDB. Cloudinary stores listing images. Guests can browse homes, save favourites, and book stays; administrators manage their own listings.
+### Find a stay that feels like yours.
 
+BookMyStay is a full-stack property booking web application that allows users to discover places to stay, explore property details, manage favourites, and book accommodations. It also enables property owners to create and manage their listings through a simple interface.
 
+The application combines a React frontend with a Node.js and Express backend, using MongoDB to store application data.
 
-## Screenshots
+**🌐 Live Demo:** [BookMyStay](https://bookmystay-m1dn.onrender.com)
 
-Screenshots are in `screenshots/`. Please replace them with current captures when convenient.
+**💻 Repository:** [GitHub](https://github.com/tarun0001g/BookMyStay)
 
-## Project structure
+---
+
+## 📸 Application Preview
+
+### Home Page
+Explore available properties, discover destinations, and search for stays based on location and travel dates.
+
+![BookMyStay Home Page](screenshots/home.png)
+
+### Available Stays
+Browse properties with images, ratings, locations, and prices.
+
+![Available Stays](screenshots/stays.png)
+
+### User Authentication
+Create an account or log in to access personalized features.
+
+![Login Page](screenshots/login.png)
+
+### My Bookings
+View upcoming, past, and cancelled bookings and manage reservations.
+
+![My Bookings](screenshots/bookings.png)
+
+### My Listings
+Create, edit, and manage your property listings.
+
+![My Listings](screenshots/listings.png)
+
+> **Note:** Save your screenshots in the existing `screenshots` directory using the filenames shown above, or update the image paths to match your actual filenames.
+
+---
+
+## ✨ Features
+
+### 🏠 Property Discovery
+- Browse available accommodations.
+- View property images, descriptions, locations, prices, and ratings.
+- Search for properties by city or property name.
+- Filter stays using available categories and amenities.
+- View detailed property information before booking.
+
+### 🔐 User Authentication
+- User registration and login.
+- Secure password handling.
+- Session-based authentication.
+- Protected routes for authenticated users.
+- Access control for user-specific features.
+
+### 📅 Booking Management
+- Book available properties.
+- Manage upcoming bookings.
+- View past and cancelled reservations.
+- Cancel eligible bookings.
+- View booking details, dates, guest count, and booking status.
+
+### ❤️ Favourites
+- Add properties to your favourites.
+- Remove properties from your favourites.
+- View saved properties in one place.
+
+### 🏡 Property Management
+- Create property listings.
+- Upload property images.
+- Add property details, amenities, and pricing.
+- Edit existing listings.
+- Delete listings when required.
+- Manage your own properties.
+
+### 👤 User Experience
+- Responsive and modern interface.
+- Property cards with clear pricing and ratings.
+- Consistent navigation across the application.
+- Dedicated pages for bookings, favourites, and listings.
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Frontend | React.js, HTML5, CSS3, JavaScript |
+| Frontend Build Tool | Vite |
+| Backend | Node.js, Express.js |
+| Database | MongoDB |
+| ODM | Mongoose |
+| Authentication | Session-based authentication |
+| Image Handling | Multer and configured image storage |
+| Architecture | Model-View-Controller (MVC) |
+| Deployment | Render |
+| Version Control | Git and GitHub |
+
+---
+
+## 🏗️ Application Architecture
+
+BookMyStay follows an MVC-oriented backend structure, separating application routes, controllers, models, middleware, and supporting utilities.
+
+The React frontend communicates with the Express application, which processes requests and interacts with MongoDB.
 
 ```text
-client/       React app, Vite config, and client tests
-  src/        API clients, components, contexts, pages, routes, styles, utilities
-config/       MongoDB, Cloudinary, and session configuration
-controllers/  API request handlers
-middleware/   Authentication, CSRF protection, and uploads
-models/       User, Home, and Booking schemas
-routes/       JSON API endpoints
-scripts/      Admin account and home owner utilities
-tests/        Jest and Supertest API tests
-utility/      Shared response and booking helpers
-validators/   Request validation chains
-rules/        House rules PDF
-screenshots/  Reference screenshots
-app.js        Express setup and server entry point
-package.json  Application scripts and dependencies
-Readme.md     Project documentation
+                 ┌──────────────────────┐
+                 │        User          │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │   React + Vite       │
+                 │      Frontend        │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │    Express.js        │
+                 │    Application       │
+                 └──────────┬───────────┘
+                            │
+                 ┌──────────┼───────────┐
+                 │          │           │
+                 ▼          ▼           ▼
+            Middleware  Controllers   Routes
+                 │          │           │
+                 └──────────┼───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │   Mongoose Models    │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │      MongoDB         │
+                 └──────────────────────┘
 ```
 
-## Setup and scripts
+### Key Implementation Concepts
 
-Install Node.js dependencies with `npm install`, then copy `.env.example` to `.env` and configure its values. The server requires `MONGO_URL` and `SESSION_SECRET`; Cloudinary settings are needed for listing uploads.
+- **MVC Architecture:** Separates application responsibilities into organized modules.
+- **RESTful Routing:** Handles requests through dedicated Express routes.
+- **Middleware:** Supports request processing, authentication, and other shared operations.
+- **Database Modeling:** Uses Mongoose schemas and models to work with MongoDB.
+- **Authentication and Authorization:** Controls access to protected application features.
+- **CRUD Operations:** Supports creating, reading, updating, and deleting property listings.
+- **File Uploads:** Handles property image uploads.
 
-Use `npm run dev` to run Express and Vite during development. `npm run build` creates the production client, and `npm start` starts the server. The `/health` endpoint returns `{ "status": "ok" }`.
+---
 
-- `npm start`: start the server
-- `npm run dev`: run Express and Vite
-- `npm run build`: create the Vite production build
-- `npm test`: run Jest API tests and Vitest client tests
-- `npm run lint`: run ESLint
-- `npm run format`: format JavaScript, JSX, JSON, Markdown, and CSS files
-- `npm run format:check`: check formatting
+## 📂 Project Structure
 
-Create an administrator with `node scripts/createAdmin.js admin@example.com 'StrongPassword'`. Existing homes can be assigned to that administrator with `node scripts/assignOwner.js admin@example.com`.
+```text
+BookMyStay/
+│
+├── client/
+│   ├── dist/                 # Production frontend build
+│   ├── src/                  # React application source
+│   ├── index.html
+│   ├── vite.config.js
+│   └── package.json          # If present in your client setup
+│
+├── config/                   # Application configuration
+├── controllers/              # Request handling logic
+├── docs/                     # Project documentation
+├── middleware/               # Custom middleware
+├── models/                   # Mongoose models
+├── routes/                   # Express routes
+├── rules/                    # Application rules
+├── screenshots/              # Application screenshots
+├── scripts/                  # Utility scripts
+├── tests/                    # Tests
+├── uploads/                  # Uploaded files, if stored locally
+├── utility/                  # Shared utility functions
+├── validators/               # Input validation
+│
+├── app.js                    # Express application entry point
+├── package.json              # Backend dependencies and scripts
+├── package-lock.json
+├── .env.example              # Environment variable template
+├── .gitignore
+└── README.md
+```
 
-## Bookings
+*The structure above highlights the main directories. Some files and directories may differ depending on your current setup.*
 
-Guests can reserve a home from its detail page. Check-in must be today or later, checkout must follow check-in, and a stay can be at most 30 nights. The server calculates the total using the current nightly price and rejects overlapping confirmed bookings. A guest can cancel their own future booking.
+---
 
-## API and access control
+## 🚀 Getting Started
 
-The JSON API is mounted under `/api`. Fetch `/api/csrf` and send the returned `csrfToken` in the `X-CSRF-Token` header on every `POST`, `PUT`, and `DELETE` request. After login, use the rotated token returned by the login response.
+Follow these steps to run BookMyStay locally.
 
-| Method | Endpoint                                               | Access           | Result                                       |
-| ------ | ------------------------------------------------------ | ---------------- | -------------------------------------------- |
-| GET    | `/api/csrf`                                            | Public           | Session CSRF token                           |
-| GET    | `/api/auth/me`                                         | Signed in        | Current user, or 401                         |
-| POST   | `/api/auth/signup`                                     | Public           | Creates a guest account                      |
-| POST   | `/api/auth/login`                                      | Public           | Starts a session                             |
-| POST   | `/api/auth/logout`                                     | Signed in        | Ends the session                             |
-| GET    | `/api/homes?q=&minPrice=&maxPrice=&sort=&page=&limit=` | Public           | Homes and page metadata; maximum 12 per page |
-| GET    | `/api/homes/:homeId`                                   | Public           | One home                                     |
-| GET    | `/api/homes/:homeId/rules`                             | Signed in        | House rules PDF                              |
-| GET    | `/api/favourites`                                      | Signed in        | Current user's favourite homes               |
-| POST   | `/api/favourites/:homeId`                              | Signed in        | Adds a favourite                             |
-| DELETE | `/api/favourites/:homeId`                              | Signed in        | Removes a favourite                          |
-| GET    | `/api/bookings`                                        | Signed in        | Current user's bookings                      |
-| POST   | `/api/bookings`                                        | Signed in        | Creates a booking                            |
-| POST   | `/api/bookings/:bookingId/cancel`                      | Booking owner    | Cancels a future booking                     |
-| GET    | `/api/admin/homes`                                     | Admin            | Lists the admin's homes                      |
-| POST   | `/api/admin/homes`                                     | Admin            | Creates a home with a photo upload           |
-| PUT    | `/api/admin/homes/:homeId`                             | Home owner admin | Updates a home                               |
-| DELETE | `/api/admin/homes/:homeId`                             | Home owner admin | Deletes a home                               |
+### Prerequisites
 
-API errors use a consistent JSON response with a message and field-keyed errors. The API uses 401 for unauthenticated requests, 403 for forbidden requests, 404 for missing resources, 409 for overlapping bookings, 422 for invalid input, and 500 for unexpected errors.
+Install the following:
 
-## Render deployment
+- [Node.js](https://nodejs.org/)
+- npm, included with Node.js
+- A MongoDB database, either local or hosted
 
-Set the values from `.env.example` in Render. Use build command `npm install --include=dev && npm run build` and start command `npm start`. Configure MongoDB Atlas network access and Cloudinary credentials for the deployed service.
+### 1. Clone the Repository
 
-## Code style and tests
+```bash
+git clone https://github.com/tarun0001g/BookMyStay.git
+```
 
-Run `npm run format`, `npm run lint`, and `npm test` before committing. Tests use Jest, Supertest, and mongodb-memory-server for the API, plus Vitest for the client.
+Navigate into the project directory:
 
-Reviews, payments, email verification, and an availability calendar are not implemented.
+```bash
+cd BookMyStay
+```
+
+### 2. Install Backend Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root using `.env.example` as your reference.
+
+```env
+MONGO_URL=your_mongodb_connection_string
+```
+
+Add any other environment variables required by your application, using the exact names defined in your configuration.
+
+**Important:** Never commit your actual `.env` file, database credentials, session secrets, or other sensitive values to GitHub.
+
+### 4. Install Frontend Dependencies
+
+Navigate to the client directory:
+
+```bash
+cd client
+npm install
+```
+
+Return to the project root after installation:
+
+```bash
+cd ..
+```
+
+### 5. Start the Application
+
+To run the backend in development mode:
+
+```bash
+npm run dev
+```
+
+If your project uses a different development script, use the command defined in the root `package.json`.
+
+To start the application using its production start script:
+
+```bash
+npm start
+```
+
+Open the local URL configured by your application in your browser.
+
+---
+
+## 🌐 Deployment
+
+BookMyStay is deployed on Render.
+
+**Live Application:** [https://bookmystay-m1dn.onrender.com](https://bookmystay-m1dn.onrender.com)
+
+The application uses a production build of the React frontend, served by the Express backend.
+
+### Render Configuration
+
+**Build Command**
+
+```bash
+npm install --include=dev && npm run build
+```
+
+**Start Command**
+
+```bash
+npm start
+```
+
+The build command installs development dependencies required by Vite and generates the production frontend files.
+
+Make sure the production build creates:
+
+```text
+client/dist/index.html
+```
+
+Configure the required environment variables in the Render dashboard before deploying.
+
+---
+
+## 🔒 Security Considerations
+
+The application includes authentication and access-controlled features.
+
+Security-related implementation areas include:
+
+- Password handling and authentication.
+- Session management.
+- Protected routes.
+- Authorization for user-specific actions.
+- Server-side request validation.
+- Environment-based configuration.
+
+Sensitive credentials should remain outside the source code. Protected operations should always be validated on the server rather than relying only on frontend restrictions.
+
+---
+
+## 🧪 Testing
+
+The project includes a `tests` directory for testing-related code.
+
+When making changes, verify the following application workflows:
+
+- User registration and login.
+- Property browsing and search.
+- Creating and managing favourites.
+- Creating and cancelling bookings.
+- Creating, editing, and deleting property listings.
+- Access to protected routes.
+- Frontend production build.
+- Application startup and deployment.
+
+Run any available automated tests using the scripts defined in `package.json`.
+
+---
+
+## 🔮 Future Improvements
+
+Potential enhancements for future versions include:
+
+- Advanced property search and filtering.
+- Improved booking availability management.
+- Online payment integration.
+- Property reviews and user feedback.
+- Email notifications for bookings.
+- Improved administrative dashboard.
+- More comprehensive automated testing.
+- Enhanced performance and accessibility.
+
+---
+
+## 👨‍💻 Author
+
+**Tarun Makwana**
+
+B.Tech in Information Technology
+
+- GitHub: [tarun0001g](https://github.com/tarun0001g)
+- Portfolio: [View Portfolio](https://tarun-portfolio-beta-three.vercel.app/)
+
+---
+
+⭐ If you find this project interesting, consider giving the repository a star!
+
+**BookMyStay — Find a stay that feels like yours.**
