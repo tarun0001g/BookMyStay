@@ -359,7 +359,7 @@ Potential enhancements for future versions include:
 
 ## 👨‍💻 Author
 
-**Tarun Makwana**
+**Tarun Makavana**
 
 B.Tech in Information Technology
 
